@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">TrafficCDMForOperator</string>
     <string name="login">Login</string>
+    <string name="hint_state">State</string>
+    <string name="time_sequence">Time Sequence</string>
+    <string name="date">Date</string>
+    <string name="submit_timestamp">Submit timestamp</string>
 </resources>

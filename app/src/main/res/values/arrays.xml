@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="states">
+        <item>LocationState</item>
+        <item>CarrierState</item>
+        <item>ServiceState</item>
+        <item>AdministrativeState</item>
+        <item>AttributeState</item>
+    </string-array>
+</resources>
