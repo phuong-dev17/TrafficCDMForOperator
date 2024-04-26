@@ -1,4 +1,4 @@
-package org.deplide.application.android.trafficcdmforoperator.toolbox
+package org.deplide.application.android.trafficcdmforoperator.tcmf
 
 data class TCMFMessage(
     //meta data
