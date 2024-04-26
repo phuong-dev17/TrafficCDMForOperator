@@ -29,6 +29,7 @@
             android:id="@+id/main"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:layout_marginHorizontal="15dp"
             tools:context=".submission.SubmissionActivity">
 
@@ -49,6 +50,7 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!--
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/timeSequence"
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
@@ -114,6 +116,7 @@
                 android:layout_weight="0.5"
                 android:hint="@string/object"
                 app:layout_constraintEnd_toStartOf="@id/clock"
+                app:layout_constraintEnd_toEndOf="@id/calendar"
                 app:layout_constraintStart_toStartOf="@id/timeSequence"
                 app:layout_constraintTop_toBottomOf="@id/calendar">
 
@@ -142,6 +145,7 @@
                     android:inputType="time" />
 
             </com.google.android.material.textfield.TextInputLayout>
+            -->
 
             <androidx.fragment.app.FragmentContainerView
                 android:layout_width="match_parent"
@@ -151,7 +155,7 @@
                 app:defaultNavHost="true"
                 android:layout_marginTop="20dp"
                 app:navGraph="@navigation/submission_activity_fragment_nav_graph"
-                app:layout_constraintTop_toBottomOf="@id/edtId"
+                app:layout_constraintTop_toBottomOf="@id/state"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 />
@@ -160,6 +164,7 @@
                 android:id="@+id/btnSubmit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
                 style="?attr/materialButtonOutlinedStyle"
                 android:fontFamily="@font/lato_bold"
                 android:textSize="30sp"
