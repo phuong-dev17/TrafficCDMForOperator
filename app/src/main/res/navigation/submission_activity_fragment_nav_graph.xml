@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/submission_activity_fragment_nav_graph"
+    app:startDestination="@id/locationStateFragment">
+
+    <fragment
+        android:id="@+id/locationStateFragment"
+        android:name="org.deplide.application.android.trafficcdmforoperator.submission.LocationStateFragment"
+        android:label="fragment_location_state"
+        tools:layout="@layout/fragment_location_state" />
+</navigation>
