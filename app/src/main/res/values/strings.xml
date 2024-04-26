@@ -5,4 +5,7 @@
     <string name="time_sequence">Time Sequence</string>
     <string name="date">Date</string>
     <string name="submit_timestamp">Submit timestamp</string>
+    <string name="object">Object</string>
+    <string name="id">ID</string>
+    <string name="log_out">Log out</string>
 </resources>
