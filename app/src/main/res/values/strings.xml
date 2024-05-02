@@ -3,9 +3,15 @@
     <string name="login">Login</string>
     <string name="hint_state">State</string>
     <string name="time_sequence">Time Sequence</string>
-    <string name="date">Date</string>
     <string name="submit_timestamp">Submit timestamp</string>
-    <string name="object">Object</string>
-    <string name="id">ID</string>
     <string name="log_out">Log out</string>
+    <string name="submit">Submit</string>
+    <string name="time">Time</string>
+    <string name="location">Location</string>
+    <string name="time_format">YYYY-MM-DD HH:MM</string>
+    <string name="time_type">Time type</string>
+    <string name="reference_object">Reference object</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="service">Service</string>
 </resources>

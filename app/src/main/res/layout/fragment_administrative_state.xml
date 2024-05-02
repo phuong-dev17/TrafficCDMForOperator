@@ -4,68 +4,30 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".submission.LocationStateFragment"
+    tools:context=".submission.AdministrativeStateFragment"
     android:orientation="vertical">
 
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/location"
-        android:labelFor="@id/edtLocationLocationState"/>
+        android:text="@string/service"
+        android:labelFor="@id/edtServiceAdministrativeState"/>
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edtLocationLocationState"
+            android:id="@+id/edtServiceAdministrativeState"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textview.MaterialTextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/reference_object"
-        android:labelFor="@id/edtReferenceObjectLocationState"/>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edtReferenceObjectLocationState"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textview.MaterialTextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/time_type"
-        android:labelFor="@+id/edtTimeTypeLocationState"/>
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <AutoCompleteTextView
-            android:id="@+id/edtTimeTypeLocationState"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="text"
-            app:simpleItems="@array/time_type"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/time"
-        android:labelFor="@id/edtTimeLocationState"/>
+        android:labelFor="@id/edtTimeAdministrativeState"/>
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
@@ -74,7 +36,7 @@
         app:endIconDrawable="@drawable/calendar_icon">
 
         <AutoCompleteTextView
-            android:id="@+id/edtTimeLocationState"
+            android:id="@+id/edtTimeAdministrativeState"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="datetime"
@@ -86,17 +48,53 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/time_sequence"
-        android:labelFor="@+id/edtTimeSequenceLocationState"/>
+        android:labelFor="@+id/edtTimeSequenceAdministrativeState"/>
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <AutoCompleteTextView
-            android:id="@+id/edtTimeSequenceLocationState"
+            android:id="@+id/edtTimeSequenceAdministrativeState"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
-            app:simpleItems="@array/time_sequence_location_state"/>
+            app:simpleItems="@array/time_sequence_administrative_state"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/location"
+        android:labelFor="@id/edtLocationAdministrativeState"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edtLocationAdministrativeState"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/reference_object"
+        android:labelFor="@id/edtReferenceObjectAdministrativeState"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edtReferenceObjectAdministrativeState"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
     </com.google.android.material.textfield.TextInputLayout>
 </LinearLayout>

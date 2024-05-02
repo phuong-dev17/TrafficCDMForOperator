@@ -3,6 +3,7 @@ package org.deplide.application.android.trafficcdmforoperator.submission
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -17,12 +18,14 @@ import org.deplide.application.android.trafficcdmforoperator.R
 import org.deplide.application.android.trafficcdmforoperator.TrafficCDMForOperatorApplication
 import org.deplide.application.android.trafficcdmforoperator.databinding.ActivitySubmissionBinding
 import org.deplide.application.android.trafficcdmforoperator.login.LoginActivity
+import org.deplide.application.android.trafficcdmforoperator.tcmf.TCMFMessage
 
 
 class SubmissionActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySubmissionBinding
     private lateinit var logOutActivityLauncher: ActivityResultLauncher<Intent>
     private lateinit var _authInfoProvider: AuthInfoProvider
+    private var currentEditingState = ""
     private val authState
         get() = _authInfoProvider.authState
     private val authService
@@ -40,6 +43,32 @@ class SubmissionActivity : AppCompatActivity() {
         logOutActivityLauncher = setupLogOutActivityLauncher()
 
         configureActionBar()
+
+        configureStateDropdownList()
+
+        configSubmitButton()
+    }
+
+    private fun configSubmitButton() {
+        binding.btnSubmit.setOnClickListener {
+        }
+    }
+
+    private fun configureStateDropdownList() {
+        binding.edtState.setOnItemClickListener { _, _, position, _ ->
+            currentEditingState = resources.getStringArray(R.array.states)[position]
+            when (currentEditingState) {
+                "LocationState" -> {
+                    Log.d(TAG, "LocationState")
+                }
+                "AdministrativeState" -> {
+                    Log.d(TAG, "AdministrativeState")
+                }
+                else -> {
+                    Log.d(TAG, "Unhandled State")
+                }
+            }
+        }
     }
 
     override fun onResume() {

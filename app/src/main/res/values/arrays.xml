@@ -7,4 +7,22 @@
         <item>AdministrativeState</item>
         <item>AttributeState</item>
     </string-array>
+    <string-array name="time_sequence_location_state">
+        <item>arrived_to</item>
+        <item>departed_from</item>
+        <item>passed_by</item>
+    </string-array>
+    <string-array name="time_type">
+        <item>Planned</item>
+        <item>Estimated</item>
+        <item>Actual</item>
+    </string-array>
+    <string-array name="time_sequence_administrative_state">
+        <item>requested</item>
+        <item>request_received</item>
+        <item>confirmed</item>
+        <item>cancelled</item>
+        <item>denied</item>
+        <item>assigned</item>
+    </string-array>
 </resources>
