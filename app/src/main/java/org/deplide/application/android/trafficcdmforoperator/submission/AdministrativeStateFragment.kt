@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import org.deplide.application.android.trafficcdmforoperator.R
 
-class AdministrativeStateFragment : Fragment() {
+class AdministrativeStateFragment : Fragment(), StateFragmentDataUpdater {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -16,5 +16,6 @@ class AdministrativeStateFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_administrative_state, container, false)
     }
 
-
+    override fun addStateFragmentDataUpdateListener(listener: StateFragmentDataUpdateListener) {
+    }
 }

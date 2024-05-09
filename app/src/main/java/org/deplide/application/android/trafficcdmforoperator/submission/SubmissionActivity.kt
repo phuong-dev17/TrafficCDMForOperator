@@ -18,7 +18,6 @@ import org.deplide.application.android.trafficcdmforoperator.R
 import org.deplide.application.android.trafficcdmforoperator.TrafficCDMForOperatorApplication
 import org.deplide.application.android.trafficcdmforoperator.databinding.ActivitySubmissionBinding
 import org.deplide.application.android.trafficcdmforoperator.login.LoginActivity
-import org.deplide.application.android.trafficcdmforoperator.tcmf.TCMFMessage
 
 
 class SubmissionActivity : AppCompatActivity() {
@@ -51,22 +50,77 @@ class SubmissionActivity : AppCompatActivity() {
 
     private fun configSubmitButton() {
         binding.btnSubmit.setOnClickListener {
+            submitTCMFMessage()
+        }
+    }
+
+    private fun submitTCMFMessage() {
+        authState.performActionWithFreshTokens(authService) { accessToken, _, ex ->
+            if (ex != null) {
+                // negotiation for fresh tokens failed, check ex for more details
+                Toast.makeText(this, ex.toString(), Toast.LENGTH_LONG).show()
+            }
+
+            viewModel.submitTCMFMessage(accessToken!!)
         }
     }
 
     private fun configureStateDropdownList() {
         binding.edtState.setOnItemClickListener { _, _, position, _ ->
-            currentEditingState = resources.getStringArray(R.array.states)[position]
+            val timeSequence = resources.getStringArray(R.array.time_sequence)[position]
+            currentEditingState = getStateFromTimeSequence(timeSequence)
+            viewModel.newTCMFMessage(
+                type = currentEditingState,
+                timeSequence = timeSequence
+            )
+
             when (currentEditingState) {
                 "LocationState" -> {
                     Log.d(TAG, "LocationState")
+                    val fragment = LocationStateFragment()
+                    fragment.addStateFragmentDataUpdateListener(viewModel)
+                    supportFragmentManager.beginTransaction().replace(R.id.navHost,
+                        fragment).commit()
                 }
                 "AdministrativeState" -> {
                     Log.d(TAG, "AdministrativeState")
+                    val fragment = AdministrativeStateFragment()
+                    fragment.addStateFragmentDataUpdateListener(viewModel)
+                    supportFragmentManager.beginTransaction().replace(R.id.navHost,
+                        fragment).commit()
                 }
                 else -> {
                     Log.d(TAG, "Unhandled State")
                 }
+            }
+        }
+    }
+
+    private fun getStateFromTimeSequence(timeSequence: String): String {
+        return when (timeSequence) {
+            "arrived_to" -> "LocationState"
+            "departed_from" -> "LocationState"
+            "passed_by" -> "LocationState"
+
+            "requested" -> "AdministrativeState"
+            "request_received" -> "AdministrativeState"
+            "confirmed" -> "AdministrativeState"
+            "cancelled" -> "AdministrativeState"
+            "denied" -> "AdministrativeState"
+            "assigned" -> "AdministrativeState"
+
+            "commenced" -> "ServiceState"
+            "completed" -> "ServiceState"
+
+            "bound_to" -> "CarrierState"
+            "unbound_from" -> "CarrierState"
+
+            "set" -> "AttributeState"
+            "unset" -> "AttributeState"
+
+            else -> {
+                Log.d(TAG, "Unhandled State")
+                ""
             }
         }
     }
@@ -87,23 +141,20 @@ class SubmissionActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        performActionWithFreshToken(::actionLogOut)
+        logout()
         return super.onOptionsItemSelected(item)
     }
 
-    private fun performActionWithFreshToken(action: (idToken: String) -> Unit) {
+    private fun logout() {
         authState.performActionWithFreshTokens(authService) { _, idToken, ex ->
             if (ex != null) {
                 // negotiation for fresh tokens failed, check ex for more details
                 Toast.makeText(this, ex.toString(), Toast.LENGTH_LONG).show()
             }
 
-            action(idToken!!)
+            val logOutIntent = authService.getEndSessionRequestIntent(getEndSessionRequest(idToken!!))
+            logOutActivityLauncher.launch(logOutIntent)
         }
-    }
-    private fun actionLogOut(idToken: String) {
-        val logOutIntent = authService.getEndSessionRequestIntent(getEndSessionRequest(idToken))
-        logOutActivityLauncher.launch(logOutIntent)
     }
 
     private fun getEndSessionRequest(idToken: String): EndSessionRequest {
