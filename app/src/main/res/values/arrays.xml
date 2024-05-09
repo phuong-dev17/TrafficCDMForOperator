@@ -1,28 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="states">
-        <item>LocationState</item>
-        <item>CarrierState</item>
-        <item>ServiceState</item>
-        <item>AdministrativeState</item>
-        <item>AttributeState</item>
-    </string-array>
-    <string-array name="time_sequence_location_state">
+    <string-array name="time_sequence">
+        <!-- location state -->
         <item>arrived_to</item>
         <item>departed_from</item>
         <item>passed_by</item>
-    </string-array>
-    <string-array name="time_type">
-        <item>Planned</item>
-        <item>Estimated</item>
-        <item>Actual</item>
-    </string-array>
-    <string-array name="time_sequence_administrative_state">
+
+        <!-- administrative state -->
         <item>requested</item>
         <item>request_received</item>
         <item>confirmed</item>
         <item>cancelled</item>
         <item>denied</item>
         <item>assigned</item>
+
+        <!-- service state -->
+        <item>commenced</item>
+        <item>completed</item>
+
+        <!--- carrier state -->
+        <item>bound_to</item>
+        <item>unbound_from</item>
+
+        <!-- attribute state -->
+        <item>set</item>
+        <item>unset</item>
+    </string-array>
+    <string-array name="time_type">
+        <item>planned</item>
+        <item>estimated</item>
+        <item>actual</item>
+    </string-array>
+    <string-array name="predefined_location_prefix">
+        <item>tcmf:location:station:</item>
+        <item>tcmf:location:depot:</item>
+        <item>tcmf:location:out_group:</item>
+        <item>tcmf:location:wagon_set:</item>
+        <item>tcmf:location:in_group:</item>
+        <item>tcmf:location:combi_terminal:</item>
+        <item>tcmf:location:train:</item>
+    </string-array>
+    <string-array name="predefined_reference_object_prefix">
+        <item>"tcmf:reference_object:ship:</item>
+        <item>"tcmf:reference_object:truck:</item>
+        <item>"tcmf:reference_object:train:</item>
+        <item>"tcmf:reference_object:wagon:</item>
+        <item>"tcmf:reference_object:shipment:</item>
+        <item>"tcmf:reference_object:airplane:</item>
+        <item>"tcmf:reference_object:trailer:</item>
+        <item>"tcmf:reference_object:cargo_carrier:</item>
     </string-array>
 </resources>
