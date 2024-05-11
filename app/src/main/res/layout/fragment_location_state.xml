@@ -24,7 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="datetime"
-            android:hint="@string/time_format"/>
+            android:hint="@string/date_time_pattern"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 

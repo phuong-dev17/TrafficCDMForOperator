@@ -6,11 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import org.deplide.application.android.trafficcdmforoperator.databinding.FragmentLocationStateBinding
 
 class LocationStateFragment : Fragment(), StateFragmentDataUpdater {
     private lateinit var binding: FragmentLocationStateBinding
     private val data: MutableMap<String, String> = mutableMapOf(
+        SubmissionData.FIELD_TIME to "",
         SubmissionData.FIELD_LOCATION to "",
         SubmissionData.FIELD_REFERENCE_OBJECT to "",
         SubmissionData.FIELD_TIME_TYPE to "",
@@ -30,6 +32,12 @@ class LocationStateFragment : Fragment(), StateFragmentDataUpdater {
         super.onViewCreated(view, savedInstanceState)
 
         binding.apply {
+            edtTimeLocationState.addTextChangedListener(
+                onTextChanged = { text, _, _, _ ->
+                    updateData(SubmissionData.FIELD_TIME, text!!.toString())
+                }
+            )
+
             edtLocationLocationState.addTextChangedListener(
                 onTextChanged = { text, _, _, _ ->
                     updateData(SubmissionData.FIELD_LOCATION, text!!.toString())

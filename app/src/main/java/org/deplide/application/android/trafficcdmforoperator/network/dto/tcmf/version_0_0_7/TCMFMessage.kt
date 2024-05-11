@@ -24,6 +24,7 @@ data class TCMFMessage(
         messageId = submissionData.messageId,
         reportedAt = submissionData.reportedAt,
         reportedBy = submissionData.reportedBy,
+        source = submissionData.source,
         grouping = submissionData.grouping,
         payload = TCMFMessagePayload(
             type = submissionData.type,

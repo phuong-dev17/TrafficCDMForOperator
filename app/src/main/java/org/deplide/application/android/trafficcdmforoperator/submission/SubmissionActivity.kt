@@ -18,9 +18,16 @@ import org.deplide.application.android.trafficcdmforoperator.R
 import org.deplide.application.android.trafficcdmforoperator.TrafficCDMForOperatorApplication
 import org.deplide.application.android.trafficcdmforoperator.databinding.ActivitySubmissionBinding
 import org.deplide.application.android.trafficcdmforoperator.login.LoginActivity
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.ZoneId
+import org.threeten.bp.ZoneOffset
+import org.threeten.bp.format.DateTimeFormatter
+import org.threeten.bp.format.DateTimeParseException
+import java.util.Calendar
+import java.util.TimeZone
 
 
-class SubmissionActivity : AppCompatActivity() {
+class SubmissionActivity : AppCompatActivity(), StateFragmentDataUpdateListener {
     private lateinit var binding: ActivitySubmissionBinding
     private lateinit var logOutActivityLauncher: ActivityResultLauncher<Intent>
     private lateinit var _authInfoProvider: AuthInfoProvider
@@ -33,6 +40,7 @@ class SubmissionActivity : AppCompatActivity() {
         get() = _authInfoProvider.serviceConfiguration
 
     private val viewModel: SubmissionViewModel by viewModels { SubmissionViewModel.factory() }
+    private var submissionData: SubmissionData? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,7 +69,7 @@ class SubmissionActivity : AppCompatActivity() {
                 Toast.makeText(this, ex.toString(), Toast.LENGTH_LONG).show()
             }
 
-            viewModel.submitTCMFMessage(accessToken!!)
+            viewModel.submitTCMFMessage(submissionData!!, accessToken!!)
         }
     }
 
@@ -69,7 +77,7 @@ class SubmissionActivity : AppCompatActivity() {
         binding.edtState.setOnItemClickListener { _, _, position, _ ->
             val timeSequence = resources.getStringArray(R.array.time_sequence)[position]
             currentEditingState = getStateFromTimeSequence(timeSequence)
-            viewModel.newTCMFMessage(
+            newTCMFMessage(
                 type = currentEditingState,
                 timeSequence = timeSequence
             )
@@ -78,14 +86,14 @@ class SubmissionActivity : AppCompatActivity() {
                 "LocationState" -> {
                     Log.d(TAG, "LocationState")
                     val fragment = LocationStateFragment()
-                    fragment.addStateFragmentDataUpdateListener(viewModel)
+                    fragment.addStateFragmentDataUpdateListener(this)
                     supportFragmentManager.beginTransaction().replace(R.id.navHost,
                         fragment).commit()
                 }
                 "AdministrativeState" -> {
                     Log.d(TAG, "AdministrativeState")
                     val fragment = AdministrativeStateFragment()
-                    fragment.addStateFragmentDataUpdateListener(viewModel)
+                    fragment.addStateFragmentDataUpdateListener(this)
                     supportFragmentManager.beginTransaction().replace(R.id.navHost,
                         fragment).commit()
                 }
@@ -174,6 +182,75 @@ class SubmissionActivity : AppCompatActivity() {
 
             startActivity(LoginActivity.intent(this))
         }
+    }
+
+    private fun newTCMFMessage(type: String, timeSequence: String) {
+        submissionData = SubmissionData(
+            type = type,
+            timeSequence = timeSequence)
+        if (submissionData?.type == SubmissionData.TYPE_MESSAGE_OPERATION) {
+            submissionData?.operation = "invalidate"
+        }
+    }
+
+    override fun onStateFragmentDataUpdate(data: Map<String, String>) {
+        data.forEach{entry ->
+            when(entry.key) {
+                SubmissionData.FIELD_TIME -> {
+                    Log.d(TAG, "${entry.key}: ${entry.value}")
+                    submissionData?.time = convertDateTimeToIso8601(
+                        entry.value, getString(R.string.date_time_pattern))
+                }
+                SubmissionData.FIELD_LOCATION -> {
+                    Log.d(TAG, "${entry.key}: ${entry.value}")
+                    submissionData?.location = entry.value
+                }
+                SubmissionData.FIELD_TIME_TYPE -> {
+                    Log.d(TAG, "${entry.key}: ${entry.value}")
+                    submissionData?.timeType = entry.value
+                }
+                SubmissionData.FIELD_TIME_SEQUENCE -> {
+                    Log.d(TAG, "${entry.key}: ${entry.value}")
+                    submissionData?.timeSequence = entry.value
+                }
+                SubmissionData.FIELD_REFERENCE_OBJECT -> {
+                    Log.d(TAG, "${entry.key}: ${entry.value}")
+                    submissionData?.referenceObject = entry.value
+                }
+                SubmissionData.FIELD_SERVICE -> {
+                    Log.d(TAG, "${entry.key}: ${entry.value}")
+                    submissionData?.service = entry.value
+                }
+                SubmissionData.FIELD_CARRIER -> {
+                    Log.d(TAG, "${entry.key}: ${entry.value}")
+                    submissionData?.carrier = entry.value
+                }
+            }
+        }
+    }
+
+    private fun convertDateTimeToIso8601(dateTime: String, dateTimePattern: String): String {
+        var result = ""
+
+        try {
+            val parser = DateTimeFormatter
+                .ofPattern(dateTimePattern)
+
+            val localDateTime = LocalDateTime
+                .parse(dateTime, parser)
+                .atZone(ZoneId.of(Calendar.getInstance().timeZone.id))
+            Log.d(TAG, "localDateTime: $localDateTime")
+
+            val dateTimeUTC = localDateTime.withZoneSameInstant(ZoneId.of("UTC"))
+            val outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
+            result = outputFormatter.format(dateTimeUTC)
+
+            Log.d(TAG, "result: $result")
+        } catch (e: DateTimeParseException) {
+            Log.d(TAG, "DateTimeParseException: $e")
+        }
+
+        return result
     }
 
     companion object {

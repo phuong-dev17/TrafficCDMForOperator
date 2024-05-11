@@ -18,36 +18,24 @@ import org.threeten.bp.Instant
 import org.threeten.bp.format.DateTimeFormatter
 import java.util.UUID
 
-class SubmissionViewModel: ViewModel(), StateFragmentDataUpdateListener {
-    private var submissionData: SubmissionData? = null
-
-
-    fun newTCMFMessage(type: String, timeSequence: String) {
-        submissionData = SubmissionData(
-            type = type,
-            timeSequence = timeSequence)
-        if (submissionData?.type != SubmissionData.TYPE_MESSAGE_OPERATION) {
-            submissionData?.time = getCurrentDateTime()
-        } else {
-            submissionData?.operation = "invalidate"
-        }
-    }
-
-    fun submitTCMFMessage(accessToken: String) {
+class SubmissionViewModel: ViewModel() {
+    fun submitTCMFMessage(
+        submissionData: SubmissionData,
+        accessToken: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val userName = getUserNameFromIdToken(accessToken)
             Log.d(TAG, "submitTCMFMessage for user $userName")
-            if (submissionData?.isPayloadValid()!!) {
-                fillTCMFMessageMetaData(userName)
-                fillTCMFMessageGrouping()
+            if (submissionData.isPayloadValid()) {
+                fillTCMFMessageMetaData(submissionData, userName)
+                fillTCMFMessageGrouping(submissionData)
 
-                if (submissionData?.isMessageValid()!!) {
+                if (submissionData.isMessageValid()) {
                     Log.d(TAG, "Submitting TCMF Message")
                     try {
                         TrafficCDMApi.retrofit.submitMessage(
                             token = "Bearer $accessToken",
                             accept = "application/json",
-                            message = TCMFMessage(submissionData!!)
+                            message = TCMFMessage(submissionData)
                         )
                     } catch (ex: Exception) {
                         Log.e(TAG, "Failed to submit TCMF Message", ex)
@@ -59,29 +47,32 @@ class SubmissionViewModel: ViewModel(), StateFragmentDataUpdateListener {
         }
     }
 
-    private fun fillTCMFMessageGrouping() {
+    private fun fillTCMFMessageGrouping(submissionData: SubmissionData) {
         /*(submissionData?.location
             ?.substring(startIndex = SubmissionData.LOCATION_PREFIX.length))?.run {
                 submissionData?.grouping?.add("tcmf:grouping:$this")
             }*/
 
-        (submissionData?.referenceObject
+        (submissionData.referenceObject
             ?.substring(startIndex = SubmissionData.REFERENCE_OBJECT_PREFIX.length))?.run {
-                submissionData?.grouping?.add("tcmf:grouping:$this")
+                submissionData.grouping.add("tcmf:grouping:$this")
             }
 
-        (submissionData?.carrier
+        (submissionData.carrier
             ?.substring(startIndex = SubmissionData.CARRIER_PREFIX.length))?.run {
-                submissionData?.grouping?.add("tcmf:grouping:$this")
+                submissionData.grouping.add("tcmf:grouping:$this")
             }
 
-        Log.d(TAG, submissionData?.grouping.toString())
+        Log.d(TAG, submissionData.grouping.toString())
     }
 
-    private fun fillTCMFMessageMetaData(userName: String) {
-        submissionData?.messageId = "tcmf:message:${UUID.randomUUID()}"
-        submissionData?.reportedBy = "tcmf:user:RISE:$userName"
-        submissionData?.reportedAt = getCurrentDateTime()
+    private fun fillTCMFMessageMetaData(
+        submissionData: SubmissionData,
+        userName: String) {
+        submissionData.messageId = "tcmf:message:${UUID.randomUUID()}"
+        submissionData.reportedBy = "tcmf:user:RISE:$userName"
+        submissionData.reportedAt = getCurrentDateTime()
+        submissionData.source = "test"
     }
 
     private fun getCurrentDateTime(): String {
@@ -98,36 +89,6 @@ class SubmissionViewModel: ViewModel(), StateFragmentDataUpdateListener {
         return adapter.fromJson(idTokenPayload)?.userName!!
     }
 
-    override fun onStateFragmentDataUpdate(data: Map<String, String>) {
-        data.forEach{entry ->
-            when(entry.key) {
-                SubmissionData.FIELD_LOCATION -> {
-                    Log.d(TAG, "${entry.key}: ${entry.value}")
-                    submissionData?.location = entry.value
-                }
-                SubmissionData.FIELD_TIME_TYPE -> {
-                    Log.d(TAG, "${entry.key}: ${entry.value}")
-                    submissionData?.timeType = entry.value
-                }
-                SubmissionData.FIELD_TIME_SEQUENCE -> {
-                    Log.d(TAG, "${entry.key}: ${entry.value}")
-                    submissionData?.timeSequence = entry.value
-                }
-                SubmissionData.FIELD_REFERENCE_OBJECT -> {
-                    Log.d(TAG, "${entry.key}: ${entry.value}")
-                    submissionData?.referenceObject = entry.value
-                }
-                SubmissionData.FIELD_SERVICE -> {
-                    Log.d(TAG, "${entry.key}: ${entry.value}")
-                    submissionData?.service = entry.value
-                }
-                SubmissionData.FIELD_CARRIER -> {
-                    Log.d(TAG, "${entry.key}: ${entry.value}")
-                    submissionData?.carrier = entry.value
-                }
-            }
-        }
-    }
     companion object {
         const val TAG = "SubmissionViewModel"
         fun factory(): ViewModelProvider.Factory {

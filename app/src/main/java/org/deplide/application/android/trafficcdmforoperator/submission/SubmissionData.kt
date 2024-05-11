@@ -70,7 +70,7 @@ data class SubmissionData(
         const val TYPE_MESSAGE_OPERATION = "MessageOperation"
         const val CARRIER_PREFIX = "tcmf:carrier:"
         const val REFERENCE_OBJECT_PREFIX = "tcmf:reference_object:"
-        const val LOCATION_PREFIX = "tcmf:location:"
+        const val FIELD_TIME = "Time"
         const val FIELD_LOCATION = "Location"
         const val FIELD_REFERENCE_OBJECT = "Reference Object"
         const val FIELD_TIME_TYPE = "Time Type"
