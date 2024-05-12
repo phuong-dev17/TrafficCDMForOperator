@@ -72,7 +72,4 @@ dependencies {
 
     //Logging Network Calls
     implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
-
-    // DateTimePicker
-    implementation("com.github.loperSeven:DateTimePicker:0.6.3")
 }
