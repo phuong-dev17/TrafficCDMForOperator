@@ -1,13 +1,28 @@
 package org.deplide.application.android.trafficcdmforoperator.submission
 
 import android.os.Bundle
+import android.text.format.DateFormat
+import android.text.format.DateFormat.is24HourFormat
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.TimeFormat
+import org.deplide.application.android.trafficcdmforoperator.R
 import org.deplide.application.android.trafficcdmforoperator.databinding.FragmentLocationStateBinding
+import org.threeten.bp.Instant
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.ZoneId
+import org.threeten.bp.ZonedDateTime
+import org.threeten.bp.format.DateTimeFormatter
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
+import java.util.TimeZone
 
 class LocationStateFragment : Fragment(), StateFragmentDataUpdater {
     private lateinit var binding: FragmentLocationStateBinding
@@ -18,6 +33,8 @@ class LocationStateFragment : Fragment(), StateFragmentDataUpdater {
         SubmissionData.FIELD_TIME_TYPE to "",
     )
     private var dataUpdateListener: StateFragmentDataUpdateListener? = null
+    private lateinit var datePicker:  MaterialDatePicker<Long>
+    private lateinit var timePicker: MaterialTimePicker
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,6 +54,53 @@ class LocationStateFragment : Fragment(), StateFragmentDataUpdater {
                     updateData(SubmissionData.FIELD_TIME, text!!.toString())
                 }
             )
+
+            txtInputLayoutTimeLocationState.setEndIconOnClickListener {
+                datePicker =
+                    MaterialDatePicker.Builder.datePicker()
+                        .setTitleText("Select date")
+                        .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                        .build()
+
+                datePicker.addOnPositiveButtonClickListener {
+                    Log.d(TAG, "selected date: $it. ${datePicker.selection}")
+                    var timeInMilliseconds = it
+
+                    val isSystem24Hour = is24HourFormat(requireContext())
+                    val clockFormat = if (isSystem24Hour) TimeFormat.CLOCK_24H else TimeFormat.CLOCK_12H
+
+                    timePicker =
+                        MaterialTimePicker.Builder()
+                            .setTimeFormat(clockFormat)
+                            .setTitleText("Select time")
+                            .build()
+
+                    timePicker.addOnPositiveButtonClickListener {
+                        Log.d(TAG, "selected time: ${timePicker.hour}:${timePicker.minute}")
+
+                        // Convert hours to milliseconds
+                        val hoursInMilliseconds = timePicker.hour * 60 * 60 * 1000
+
+                        // Convert minutes to milliseconds
+                        val minutesInMilliseconds = timePicker.minute * 60 * 1000
+                        timeInMilliseconds += hoursInMilliseconds + minutesInMilliseconds
+
+                        val instant = Instant.ofEpochMilli(timeInMilliseconds)
+                        val zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.of("UTC"))
+
+                        val sdf = DateTimeFormatter.ofPattern(getString(R.string.date_time_pattern))
+                        val dateTime = sdf.format(zonedDateTime)
+
+                        Log.d(TAG, "dateTime: $dateTime")
+
+                        edtTimeLocationState.setText(dateTime)
+                        updateData(SubmissionData.FIELD_TIME, dateTime)
+                    }
+
+                    timePicker.show(childFragmentManager, TAG)
+                }
+                datePicker.show(childFragmentManager, TAG)
+            }
 
             edtLocationLocationState.addTextChangedListener(
                 onTextChanged = { text, _, _, _ ->
@@ -69,5 +133,9 @@ class LocationStateFragment : Fragment(), StateFragmentDataUpdater {
 
     override fun addStateFragmentDataUpdateListener(listener: StateFragmentDataUpdateListener) {
         dataUpdateListener = listener
+    }
+
+    companion object {
+        private const val TAG = "LocationStateFragment"
     }
 }
