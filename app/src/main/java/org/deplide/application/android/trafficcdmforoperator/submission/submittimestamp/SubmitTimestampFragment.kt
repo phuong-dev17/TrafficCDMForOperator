@@ -1,4 +1,4 @@
-package org.deplide.application.android.trafficcdmforoperator.submission
+package org.deplide.application.android.trafficcdmforoperator.submission.submittimestamp
 
 import android.os.Bundle
 import android.util.Log
@@ -8,10 +8,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.launch
 import org.deplide.application.android.trafficcdmforoperator.AuthInfoProvider
 import org.deplide.application.android.trafficcdmforoperator.R
 import org.deplide.application.android.trafficcdmforoperator.TrafficCDMForOperatorApplication
 import org.deplide.application.android.trafficcdmforoperator.databinding.FragmentSubmitTimestampBinding
+import org.deplide.application.android.trafficcdmforoperator.submission.AdministrativeStateFragment
+import org.deplide.application.android.trafficcdmforoperator.submission.LocationStateFragment
+import org.deplide.application.android.trafficcdmforoperator.submission.StateFragmentDataUpdateListener
 import org.deplide.application.android.trafficcdmforoperator.submission.data.version_0_0_7.SubmissionData
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
@@ -46,6 +53,41 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
 
         configureStateDropdownList()
         configSubmitButton()
+
+        observerUiState()
+    }
+
+    private fun observerUiState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
+                viewModel.uiState.collect() { uiState ->
+                    when (uiState) {
+                        SubmitTmestampUIState.Idle -> onIdle()
+                        SubmitTmestampUIState.Sending -> onSending()
+                        SubmitTmestampUIState.Success -> onSuccess()
+                        SubmitTmestampUIState.Error -> onError()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun onIdle() {
+        binding.idleView.visibility = View.VISIBLE
+        binding.sendingView.visibility = View.GONE
+    }
+
+    private fun onSending() {
+        binding.idleView.visibility = View.GONE
+        binding.sendingView.visibility = View.VISIBLE
+    }
+
+    private fun onSuccess() {
+        Toast.makeText(requireContext(), "Success", Toast.LENGTH_LONG).show()
+    }
+
+    private fun onError() {
+        Toast.makeText(requireContext(), "Error", Toast.LENGTH_LONG).show()
     }
 
     private fun configSubmitButton() {

@@ -6,6 +6,6 @@
 
     <fragment
         android:id="@+id/submitTimestampFragment"
-        android:name="org.deplide.application.android.trafficcdmforoperator.submission.SubmitTimestampFragment"
+        android:name="org.deplide.application.android.trafficcdmforoperator.submission.submittimestamp.SubmitTimestampFragment"
         android:label="@string/submit_timestamp" />
 </navigation>
