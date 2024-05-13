@@ -14,11 +14,12 @@ import org.apache.commons.codec.binary.Base64
 import org.deplide.application.android.trafficcdmforoperator.network.IdToken
 import org.deplide.application.android.trafficcdmforoperator.network.TrafficCDMApi
 import org.deplide.application.android.trafficcdmforoperator.network.dto.tcmf.version_0_0_7.TCMFMessage
+import org.deplide.application.android.trafficcdmforoperator.submission.data.version_0_0_7.SubmissionData
 import org.threeten.bp.Instant
 import org.threeten.bp.format.DateTimeFormatter
 import java.util.UUID
 
-class SubmissionViewModel: ViewModel() {
+class SubmitTimestampViewModel: ViewModel() {
     fun submitTCMFMessage(
         submissionData: SubmissionData,
         accessToken: String) {
@@ -90,11 +91,11 @@ class SubmissionViewModel: ViewModel() {
     }
 
     companion object {
-        const val TAG = "SubmissionViewModel"
+        const val TAG = "SubmitTimestampViewModel"
         fun factory(): ViewModelProvider.Factory {
             return viewModelFactory {
                 initializer {
-                    SubmissionViewModel()
+                    SubmitTimestampViewModel()
                 }
             }
         }

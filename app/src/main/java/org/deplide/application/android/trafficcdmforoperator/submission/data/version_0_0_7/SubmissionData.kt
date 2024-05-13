@@ -1,7 +1,10 @@
-package org.deplide.application.android.trafficcdmforoperator.submission
+package org.deplide.application.android.trafficcdmforoperator.submission.data.version_0_0_7
+
+import org.deplide.application.android.trafficcdmforoperator.network.dto.tcmf.version_0_0_7.TCMFMessage
 
 data class SubmissionData(
     // meta data
+    val version: String = TCMFMessage.VERSION,
     var messageId: String = "",
     var reportedAt: String = "",
     var reportedBy: String = "",

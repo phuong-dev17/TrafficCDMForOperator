@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/submission_activity_fragment_nav_graph.xml"
+    app:startDestination="@id/submitTimestampFragment">
+
+    <fragment
+        android:id="@+id/submitTimestampFragment"
+        android:name="org.deplide.application.android.trafficcdmforoperator.submission.SubmitTimestampFragment"
+        android:label="@string/submit_timestamp" />
+</navigation>

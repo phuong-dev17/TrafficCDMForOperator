@@ -1,7 +1,6 @@
 package org.deplide.application.android.trafficcdmforoperator.submission
 
 import android.os.Bundle
-import android.text.format.DateFormat
 import android.text.format.DateFormat.is24HourFormat
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,15 +13,11 @@ import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import org.deplide.application.android.trafficcdmforoperator.R
 import org.deplide.application.android.trafficcdmforoperator.databinding.FragmentLocationStateBinding
+import org.deplide.application.android.trafficcdmforoperator.submission.data.version_0_0_7.SubmissionData
 import org.threeten.bp.Instant
-import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.format.DateTimeFormatter
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
-import java.util.TimeZone
 
 class LocationStateFragment : Fragment(), StateFragmentDataUpdater {
     private lateinit var binding: FragmentLocationStateBinding

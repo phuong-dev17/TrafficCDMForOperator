@@ -2,7 +2,7 @@ package org.deplide.application.android.trafficcdmforoperator.network.dto.tcmf.v
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import org.deplide.application.android.trafficcdmforoperator.submission.SubmissionData
+import org.deplide.application.android.trafficcdmforoperator.submission.data.version_0_0_7.SubmissionData
 
 @JsonClass(generateAdapter = true)
 data class TCMFMessage(
@@ -40,6 +40,6 @@ data class TCMFMessage(
         )
     )
     companion object {
-        private const val VERSION = "0.0.7"
+        const val VERSION = "0.0.7"
     }
 }
