@@ -58,10 +58,13 @@ class SubmitTimestampViewModel: ViewModel() {
                         }
                         _uiState.value = SubmitTmestampUIState.Success
                     } catch (ex: Exception) {
-                        Log.e(TAG, "Failed to submit TCMF Message", ex)
-                        _uiState.value = SubmitTmestampUIState.Error
+                        _uiState.value = SubmitTmestampUIState.Error("Failed to submit TCMF Message ${ex.message}")
                     }
+                } else {
+                    _uiState.value = SubmitTmestampUIState.Error("Invalid TCMF Message")
                 }
+            } else {
+                _uiState.value = SubmitTmestampUIState.Error("Invalid Payload")
             }
 
             Log.d(TAG, submissionData.toString())

@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import org.deplide.application.android.trafficcdmforoperator.AuthInfoProvider
 import org.deplide.application.android.trafficcdmforoperator.R
@@ -65,7 +66,7 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
                         SubmitTmestampUIState.Idle -> onIdle()
                         SubmitTmestampUIState.Sending -> onSending()
                         SubmitTmestampUIState.Success -> onSuccess()
-                        SubmitTmestampUIState.Error -> onError()
+                        is SubmitTmestampUIState.Error -> onError(uiState.message)
                     }
                 }
             }
@@ -86,8 +87,8 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
         Toast.makeText(requireContext(), "Success", Toast.LENGTH_LONG).show()
     }
 
-    private fun onError() {
-        Toast.makeText(requireContext(), "Error", Toast.LENGTH_LONG).show()
+    private fun onError(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
     }
 
     private fun configSubmitButton() {

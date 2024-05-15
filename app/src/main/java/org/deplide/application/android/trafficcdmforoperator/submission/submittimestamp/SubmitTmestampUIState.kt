@@ -4,7 +4,6 @@ sealed class SubmitTmestampUIState {
     data object Idle : SubmitTmestampUIState()
     data object Sending : SubmitTmestampUIState()
 
+    data class Error(val message: String) : SubmitTmestampUIState()
     data object Success : SubmitTmestampUIState()
-    data object Error : SubmitTmestampUIState()
-
 }
