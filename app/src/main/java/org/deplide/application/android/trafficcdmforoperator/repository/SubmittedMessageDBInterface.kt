@@ -9,4 +9,5 @@ interface SubmittedMessageDBInterface {
 
     fun clearSubmittedMessages()
 
+    fun findMessageById(id: String): SubmissionData?
 }

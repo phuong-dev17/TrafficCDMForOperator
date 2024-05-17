@@ -77,15 +77,19 @@ class SubmitTimestampViewModel: ViewModel() {
                 submissionData?.grouping?.add("tcmf:grouping:$this")
             }*/
 
-        (submissionData.referenceObject
-            ?.substring(startIndex = SubmissionData.REFERENCE_OBJECT_PREFIX.length))?.run {
-                submissionData.grouping.add("tcmf:grouping:$this")
-            }
+        if (!submissionData.referenceObject.isNullOrEmpty()) {
+            (submissionData.referenceObject
+                ?.substring(startIndex = SubmissionData.REFERENCE_OBJECT_PREFIX.length))?.run {
+                    submissionData.grouping.add("tcmf:grouping:$this")
+                }
+        }
 
-        (submissionData.carrier
-            ?.substring(startIndex = SubmissionData.CARRIER_PREFIX.length))?.run {
-                submissionData.grouping.add("tcmf:grouping:$this")
-            }
+        if (!submissionData.carrier.isNullOrEmpty()) {
+            (submissionData.carrier
+                ?.substring(startIndex = SubmissionData.CARRIER_PREFIX.length))?.run {
+                    submissionData.grouping.add("tcmf:grouping:$this")
+                }
+        }
 
         Log.d(TAG, submissionData.grouping.toString())
     }

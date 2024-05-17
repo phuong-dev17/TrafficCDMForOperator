@@ -11,16 +11,22 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
+import com.google.android.material.internal.ViewUtils.hideKeyboard
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import org.deplide.application.android.trafficcdmforoperator.AuthInfoProvider
 import org.deplide.application.android.trafficcdmforoperator.R
 import org.deplide.application.android.trafficcdmforoperator.TrafficCDMForOperatorApplication
 import org.deplide.application.android.trafficcdmforoperator.databinding.FragmentSubmitTimestampBinding
+import org.deplide.application.android.trafficcdmforoperator.hideKeyboard
 import org.deplide.application.android.trafficcdmforoperator.submission.AdministrativeStateFragment
 import org.deplide.application.android.trafficcdmforoperator.submission.LocationStateFragment
 import org.deplide.application.android.trafficcdmforoperator.submission.StateFragmentDataUpdateListener
 import org.deplide.application.android.trafficcdmforoperator.submission.data.version_0_0_7.SubmissionData
+import org.deplide.application.android.trafficcdmforoperator.submission.submissionoverview.SubmissionOverviewFragmentDirections
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
 import org.threeten.bp.format.DateTimeFormatter
@@ -39,6 +45,7 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
     private val authService
         get() = _authInfoProvider.authService
 
+    private lateinit var navController: NavController
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,6 +58,8 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        navController = view.findNavController()
 
         configureStateDropdownList()
         configSubmitButton()
@@ -84,10 +93,21 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
     }
 
     private fun onSuccess() {
-        Toast.makeText(requireContext(), "Success", Toast.LENGTH_LONG).show()
+        requireContext().hideKeyboard(binding.root)
+        binding.sendingView.visibility = View.GONE
+        Snackbar.make(binding.root, "Timestamp submitted successfully", Snackbar.LENGTH_INDEFINITE)
+            .setAction("Dismiss") {
+                val action =
+                    SubmitTimestampFragmentDirections.actionSubmitTimestampFragmentToSubmissionOverviewFragment()
+
+                navController.navigate(action)
+            }
+            .show()
     }
 
     private fun onError(message: String) {
+        binding.sendingView.visibility = View.GONE
+        binding.idleView.visibility = View.VISIBLE
         Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
     }
 

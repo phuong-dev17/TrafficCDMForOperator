@@ -69,6 +69,24 @@ data class SubmissionData(
         return isValid
     }
 
+    fun getDescription(): String {
+        return when(type) {
+            "LocationState" -> getDescriptionForLocationState()
+            else -> "" //unknown type
+        }
+    }
+
+    private fun getDescriptionForLocationState(): String {
+        val objectType = referenceObject?.split(":")!![2]
+        val objectId = referenceObject?.split("${objectType}:")!![1]
+        val locationType = location?.split(":")!![2]
+        val locationId = location?.split("${locationType}:")!![1]
+        return "$objectType $objectId" +
+                " is $timeType $timeSequence" +
+                " $locationType $locationId" +
+                " at $time"
+    }
+
     companion object {
         const val TYPE_MESSAGE_OPERATION = "MessageOperation"
         const val CARRIER_PREFIX = "tcmf:carrier:"

@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/submission_activity_fragment_nav_graph.xml"
-    app:startDestination="@id/submitTimestampFragment">
+    app:startDestination="@id/submissionOverviewFragment">
 
     <fragment
         android:id="@+id/submitTimestampFragment"
         android:name="org.deplide.application.android.trafficcdmforoperator.submission.submittimestamp.SubmitTimestampFragment"
-        android:label="@string/submit_timestamp" />
+        android:label="@string/submit_timestamp" >
+        <argument
+            android:name="messageId"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="editable"
+            app:argType="boolean"
+            android:defaultValue="true" />
+        <action
+            android:id="@+id/action_submitTimestampFragment_to_submissionOverviewFragment"
+            app:destination="@id/submissionOverviewFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/submissionOverviewFragment"
+        android:name="org.deplide.application.android.trafficcdmforoperator.submission.submissionoverview.SubmissionOverviewFragment"
+        android:label="@string/submission_overview"
+        tools:layout="@layout/fragment_submission_overview" >
+        <action
+            android:id="@+id/action_submissionOverviewFragment_to_submitTimestampFragment"
+            app:destination="@id/submitTimestampFragment" />
+    </fragment>
 </navigation>
