@@ -14,6 +14,7 @@ import com.google.android.material.timepicker.TimeFormat
 import org.deplide.application.android.trafficcdmforoperator.R
 import org.deplide.application.android.trafficcdmforoperator.databinding.FragmentLocationStateBinding
 import org.deplide.application.android.trafficcdmforoperator.submission.data.version_0_0_7.SubmissionData
+import org.deplide.application.android.trafficcdmforoperator.submission.util.DateTimeHelper.Companion.getCurrentDateTime
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
@@ -34,7 +35,7 @@ class LocationStateFragment : Fragment(), StateFragmentDataUpdater {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding = FragmentLocationStateBinding.inflate(inflater, container, false)
         return binding.root
@@ -44,6 +45,9 @@ class LocationStateFragment : Fragment(), StateFragmentDataUpdater {
         super.onViewCreated(view, savedInstanceState)
 
         binding.apply {
+            edtTimeLocationState.setText(
+                getCurrentDateTime(format = getString(R.string.date_time_pattern))
+            )
             edtTimeLocationState.addTextChangedListener(
                 onTextChanged = { text, _, _, _ ->
                     updateData(SubmissionData.FIELD_TIME, text!!.toString())
@@ -118,7 +122,7 @@ class LocationStateFragment : Fragment(), StateFragmentDataUpdater {
     }
 
     private fun updateData(key: String, value: String) {
-        data[key] = value.toString()
+        data[key] = value
         informListeners()
     }
 

@@ -19,8 +19,7 @@ import org.deplide.application.android.trafficcdmforoperator.network.dto.tcmf.ve
 import org.deplide.application.android.trafficcdmforoperator.repository.SubmittedMessageDBFactory
 import org.deplide.application.android.trafficcdmforoperator.repository.SubmittedMessageDBInterface
 import org.deplide.application.android.trafficcdmforoperator.submission.data.version_0_0_7.SubmissionData
-import org.threeten.bp.Instant
-import org.threeten.bp.format.DateTimeFormatter
+import org.deplide.application.android.trafficcdmforoperator.submission.util.DateTimeHelper.Companion.getCurrentDateTime
 import java.util.UUID
 
 class SubmitTimestampViewModel: ViewModel() {
@@ -99,14 +98,8 @@ class SubmitTimestampViewModel: ViewModel() {
         userName: String) {
         submissionData.messageId = "tcmf:message:${UUID.randomUUID()}"
         submissionData.reportedBy = "tcmf:user:RISE:$userName"
-        submissionData.reportedAt = getCurrentDateTime()
+        submissionData.reportedAt = getCurrentDateTime(convertToUTC = true)
         submissionData.source = "test"
-    }
-
-    private fun getCurrentDateTime(): String {
-        val now = Instant.now()
-        val formatter = DateTimeFormatter.ISO_INSTANT
-        return formatter.format(now)
     }
 
     private fun getUserNameFromIdToken(idToken: String): String {
