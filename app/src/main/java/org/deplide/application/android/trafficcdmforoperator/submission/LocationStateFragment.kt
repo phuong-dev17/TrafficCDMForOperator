@@ -45,12 +45,19 @@ class LocationStateFragment : Fragment(), StateFragmentDataUpdater {
         super.onViewCreated(view, savedInstanceState)
 
         binding.apply {
-            edtTimeLocationState.setText(
-                getCurrentDateTime(format = getString(R.string.date_time_pattern))
-            )
+            val currentDateTime = getCurrentDateTime(format = getString(R.string.date_time_pattern))
+
+            edtTimeLocationState.setText(currentDateTime)
+            updateData(SubmissionData.FIELD_TIME, currentDateTime)
             edtTimeLocationState.addTextChangedListener(
                 onTextChanged = { text, _, _, _ ->
                     updateData(SubmissionData.FIELD_TIME, text!!.toString())
+                }
+            )
+
+            edtTimeTypeLocationState.addTextChangedListener(
+                onTextChanged = { text, _, _, _ ->
+                    updateData(SubmissionData.FIELD_TIME_TYPE, text!!.toString())
                 }
             )
 
@@ -110,12 +117,6 @@ class LocationStateFragment : Fragment(), StateFragmentDataUpdater {
             edtReferenceObjectLocationState.addTextChangedListener(
                 onTextChanged = { text, _, _, _ ->
                     updateData(SubmissionData.FIELD_REFERENCE_OBJECT, text!!.toString())
-                }
-            )
-
-            edtTimeTypeLocationState.addTextChangedListener(
-                onTextChanged = { text, _, _, _ ->
-                    updateData(SubmissionData.FIELD_TIME_TYPE, text!!.toString())
                 }
             )
         }
