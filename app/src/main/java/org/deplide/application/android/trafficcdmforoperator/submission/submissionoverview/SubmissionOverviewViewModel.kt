@@ -28,4 +28,8 @@ class SubmissionOverviewViewModel: ViewModel() {
             }
         }
     }
+
+    fun undoSubmission(messageId: String) {
+        TODO("Not yet implemented")
+    }
 }

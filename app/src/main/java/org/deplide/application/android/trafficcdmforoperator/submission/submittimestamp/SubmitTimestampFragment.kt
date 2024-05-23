@@ -13,8 +13,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
-import com.google.android.material.internal.ViewUtils.hideKeyboard
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import org.deplide.application.android.trafficcdmforoperator.AuthInfoProvider
@@ -26,7 +24,6 @@ import org.deplide.application.android.trafficcdmforoperator.submission.Administ
 import org.deplide.application.android.trafficcdmforoperator.submission.LocationStateFragment
 import org.deplide.application.android.trafficcdmforoperator.submission.StateFragmentDataUpdateListener
 import org.deplide.application.android.trafficcdmforoperator.submission.data.version_0_0_7.SubmissionData
-import org.deplide.application.android.trafficcdmforoperator.submission.submissionoverview.SubmissionOverviewFragmentDirections
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
 import org.threeten.bp.format.DateTimeFormatter
@@ -46,11 +43,26 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
         get() = _authInfoProvider.authService
 
     private lateinit var navController: NavController
+    private var editMode: String? = null
+    private var messageId: String? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            Log.d(TAG, "onCreate: $it")
+            messageId = it.getString(ARGUMENT_MSG_ID)
+            editMode = it.getString(ARGUMENT_EDIT_MODE)
+        }
+
+        if (messageId != null) {
+            viewModel.loadMessage(messageId!!)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding = FragmentSubmitTimestampBinding.inflate(inflater, container, false)
         return binding.root
@@ -61,19 +73,35 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
 
         navController = view.findNavController()
 
+        configureAccordingToEditMode()
+
         configureStateDropdownList()
         configSubmitButton()
 
         observerUiState()
     }
 
+    private fun configureAccordingToEditMode() {
+        binding.edtState.isEnabled = if (editMode == null) {
+            false
+        } else {
+            true
+        }
+
+        binding.btnSubmit.visibility = if (editMode == null) {
+            View.GONE
+        } else {
+            View.VISIBLE
+        }
+    }
+
     private fun observerUiState() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
-                viewModel.uiState.collect() { uiState ->
+                viewModel.uiState.collect { uiState ->
                     when (uiState) {
-                        SubmitTmestampUIState.Idle -> onIdle()
-                        SubmitTmestampUIState.Sending -> onSending()
+                        is SubmitTmestampUIState.Idle -> onIdle(uiState.initialData)
+                        SubmitTmestampUIState.Processing -> onProcessing()
                         SubmitTmestampUIState.Success -> onSuccess()
                         is SubmitTmestampUIState.Error -> onError(uiState.message)
                     }
@@ -82,19 +110,28 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
         }
     }
 
-    private fun onIdle() {
+    private fun onIdle(initialData: SubmissionData?) {
         binding.idleView.visibility = View.VISIBLE
-        binding.sendingView.visibility = View.GONE
+        binding.processingView.visibility = View.GONE
+
+        initialData?.let {data ->
+            binding.apply {
+                val timeSequence = data.timeSequence!!
+                edtState.setText(timeSequence)
+
+                loadStateFragment(timeSequence, data)
+            }
+        }
     }
 
-    private fun onSending() {
+    private fun onProcessing() {
         binding.idleView.visibility = View.GONE
-        binding.sendingView.visibility = View.VISIBLE
+        binding.processingView.visibility = View.VISIBLE
     }
 
     private fun onSuccess() {
         requireContext().hideKeyboard(binding.root)
-        binding.sendingView.visibility = View.GONE
+        binding.processingView.visibility = View.GONE
         Snackbar.make(binding.root, "Timestamp submitted successfully", Snackbar.LENGTH_INDEFINITE)
             .setAction("Dismiss") {
                 val action =
@@ -106,7 +143,7 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
     }
 
     private fun onError(message: String) {
-        binding.sendingView.visibility = View.GONE
+        binding.processingView.visibility = View.GONE
         binding.idleView.visibility = View.VISIBLE
         Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
     }
@@ -131,30 +168,42 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
     private fun configureStateDropdownList() {
         binding.edtState.setOnItemClickListener { _, _, position, _ ->
             val timeSequence = resources.getStringArray(R.array.time_sequence)[position]
-            val currentEditingState = getStateFromTimeSequence(timeSequence)
-            newTCMFMessage(
-                type = currentEditingState,
-                timeSequence = timeSequence
-            )
 
-            when (currentEditingState) {
-                "LocationState" -> {
-                    Log.d(TAG, "LocationState")
-                    val fragment = LocationStateFragment()
-                    fragment.addStateFragmentDataUpdateListener(this)
-                    childFragmentManager.beginTransaction().replace(R.id.navHost,
-                        fragment).commit()
-                }
-                "AdministrativeState" -> {
-                    Log.d(TAG, "AdministrativeState")
-                    val fragment = AdministrativeStateFragment()
-                    fragment.addStateFragmentDataUpdateListener(this)
-                    childFragmentManager.beginTransaction().replace(R.id.navHost,
-                        fragment).commit()
-                }
-                else -> {
-                    Log.d(TAG, "Unhandled State")
-                }
+            loadStateFragment(timeSequence)
+        }
+    }
+
+    private fun loadStateFragment(timeSequence: String, initialData: SubmissionData? = null) {
+        val currentEditingState = getStateFromTimeSequence(timeSequence)
+
+        newTCMFMessage(
+            type = currentEditingState,
+            timeSequence = timeSequence
+        )
+
+        val bundle = Bundle()
+        bundle.putParcelable(CHILD_ARGUMENT_INITIAL_DATA, initialData)
+        bundle.putString(CHILD_ARGUMENT_EDIT_MODE, editMode)
+
+        when (currentEditingState) {
+            "LocationState" -> {
+                Log.d(TAG, "LocationState")
+                val fragment = LocationStateFragment()
+                fragment.addStateFragmentDataUpdateListener(this)
+                fragment.arguments = bundle
+                childFragmentManager.beginTransaction().replace(R.id.navHost,
+                    fragment).commit()
+            }
+            "AdministrativeState" -> {
+                Log.d(TAG, "AdministrativeState")
+                val fragment = AdministrativeStateFragment()
+                fragment.addStateFragmentDataUpdateListener(this)
+                fragment.arguments = bundle
+                childFragmentManager.beginTransaction().replace(R.id.navHost,
+                    fragment).commit()
+            }
+            else -> {
+                Log.d(TAG, "Unhandled State")
             }
         }
     }
@@ -259,5 +308,15 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
 
     companion object {
         private const val TAG = "SubmitTimestampFragment"
+
+        const val EDIT_MODE_NEW_MESSAGE = "New Message"
+        const val EDIT_MODE_MODIFY_MESSAGE = "Modify Message"
+        const val EDIT_MODE_UNDO_MESSAGE = "Undo Message"
+
+        const val ARGUMENT_MSG_ID = "messageId"
+        const val ARGUMENT_EDIT_MODE = "editMode"
+
+        const val CHILD_ARGUMENT_INITIAL_DATA = "initialData"
+        const val CHILD_ARGUMENT_EDIT_MODE = "editMode"
     }
 }

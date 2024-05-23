@@ -1,7 +1,10 @@
 package org.deplide.application.android.trafficcdmforoperator.submission.data.version_0_0_7
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import org.deplide.application.android.trafficcdmforoperator.network.dto.tcmf.version_0_0_7.TCMFMessage
 
+@Parcelize
 data class SubmissionData(
     // meta data
     val version: String = TCMFMessage.VERSION,
@@ -26,7 +29,7 @@ data class SubmissionData(
     var carrier: String? = null,
     var attribute: String? = null,
     var operation: String? = null
-) {
+) : Parcelable {
     fun isPayloadValid(): Boolean {
         return when(type) {
             "LocationState" -> isLocationStatePayloadValid()

@@ -14,9 +14,9 @@
             app:argType="string"
             app:nullable="true" />
         <argument
-            android:name="editable"
-            app:argType="boolean"
-            android:defaultValue="true" />
+            android:name="editMode"
+            app:argType="string"
+            app:nullable="true" />
         <action
             android:id="@+id/action_submitTimestampFragment_to_submissionOverviewFragment"
             app:destination="@id/submissionOverviewFragment" />

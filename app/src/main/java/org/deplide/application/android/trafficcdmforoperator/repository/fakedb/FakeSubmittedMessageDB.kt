@@ -18,7 +18,7 @@ class FakeSubmittedMessageDB : SubmittedMessageDBInterface {
         db.clear()
     }
 
-    override fun findMessageById(id: String): SubmissionData? {
+    override fun getMessage(id: String): SubmissionData? {
         return db[id]
     }
 

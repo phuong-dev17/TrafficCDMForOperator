@@ -27,5 +27,18 @@ class DateTimeHelper() {
 
             return dateTime.format(formatter)
         }
+
+        fun convertUTCTimeToSystemDefault(utcTime: String, format: String? = null): String {
+            val inputFormatter = DateTimeFormatter.ISO_INSTANT
+            val outputFormatter = if (format != null) {
+                DateTimeFormatter.ofPattern(format)
+            } else {
+                DateTimeFormatter.ISO_INSTANT
+            }
+
+            val instant = Instant.from(inputFormatter.parse(utcTime))
+            val dateTime = instant.atZone(ZoneId.systemDefault())
+            return dateTime.format(outputFormatter)
+        }
     }
 }

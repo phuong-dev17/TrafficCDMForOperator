@@ -23,7 +23,7 @@ import org.deplide.application.android.trafficcdmforoperator.submission.util.Dat
 import java.util.UUID
 
 class SubmitTimestampViewModel: ViewModel() {
-    private var _uiState = MutableStateFlow<SubmitTmestampUIState>(SubmitTmestampUIState.Idle)
+    private var _uiState = MutableStateFlow<SubmitTmestampUIState>(SubmitTmestampUIState.Idle(null))
     val uiState: StateFlow<SubmitTmestampUIState> = _uiState
 
     private val submittedMessageDB: SubmittedMessageDBInterface by lazy {
@@ -34,7 +34,7 @@ class SubmitTimestampViewModel: ViewModel() {
         submissionData: SubmissionData,
         accessToken: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            _uiState.value = SubmitTmestampUIState.Sending
+            _uiState.value = SubmitTmestampUIState.Processing
             val userName = getUserNameFromIdToken(accessToken)
             Log.d(TAG, "submitTCMFMessage for user $userName")
             if (submissionData.isPayloadValid()) {
@@ -52,9 +52,6 @@ class SubmitTimestampViewModel: ViewModel() {
 
                         submittedMessageDB.addMessage(submissionData)
 
-                        submittedMessageDB.getSubmittedMessages().forEach {
-                            Log.d(TAG, it.toString())
-                        }
                         _uiState.value = SubmitTmestampUIState.Success
                     } catch (ex: Exception) {
                         _uiState.value = SubmitTmestampUIState.Error("Failed to submit TCMF Message ${ex.message}")
@@ -108,6 +105,18 @@ class SubmitTimestampViewModel: ViewModel() {
         val moshi: Moshi = Moshi.Builder().build()
         val adapter: JsonAdapter<IdToken> = moshi.adapter(IdToken::class.java)
         return adapter.fromJson(idTokenPayload)?.userName!!
+    }
+
+    fun loadMessage(messageId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.value = SubmitTmestampUIState.Processing
+
+            submittedMessageDB.getMessage(messageId)?.let {
+                _uiState.value = SubmitTmestampUIState.Idle(it)
+            }?: run {
+                _uiState.value = SubmitTmestampUIState.Idle(null)
+            }
+        }
     }
 
     companion object {

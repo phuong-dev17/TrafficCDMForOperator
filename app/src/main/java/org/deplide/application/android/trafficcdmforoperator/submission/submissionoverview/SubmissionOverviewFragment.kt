@@ -12,12 +12,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.launch
-import org.deplide.application.android.trafficcdmforoperator.R
 import org.deplide.application.android.trafficcdmforoperator.databinding.FragmentSubmissionOverviewBinding
 import org.deplide.application.android.trafficcdmforoperator.submission.data.version_0_0_7.SubmissionData
+import org.deplide.application.android.trafficcdmforoperator.submission.submittimestamp.SubmitTimestampFragment
 
 class SubmissionOverviewFragment : Fragment() {
     private lateinit var binding: FragmentSubmissionOverviewBinding
@@ -26,7 +25,7 @@ class SubmissionOverviewFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentSubmissionOverviewBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -39,19 +38,52 @@ class SubmissionOverviewFragment : Fragment() {
         observeUIState()
 
         binding.fabSubmitNewTimestamp.setOnClickListener {
-            val action =
-                SubmissionOverviewFragmentDirections.actionSubmissionOverviewFragmentToSubmitTimestampFragment(
-                    messageId = null,
-                    editable = true)
-
-            navController.navigate(action)
+            navigateToSubmitNewTimestamp()
         }
+    }
+
+    private fun navigateToSubmitNewTimestamp() {
+        navigateToTimestampFragment(
+            messageId = null,
+            editMode = SubmitTimestampFragment.EDIT_MODE_NEW_MESSAGE)
+    }
+
+    private fun navigateToViewExistingTimestamp(messageId: String) {
+        navigateToTimestampFragment(messageId = messageId, editMode = null)
+    }
+
+    private fun navigateToEditCopiedTimestamp(messageId: String) {
+        navigateToTimestampFragment(
+            messageId = messageId,
+            editMode = SubmitTimestampFragment.EDIT_MODE_NEW_MESSAGE)
+    }
+
+    private fun navigateToModifyTimestamp(messageId: String) {
+        navigateToTimestampFragment(
+            messageId = messageId,
+            editMode = SubmitTimestampFragment.EDIT_MODE_MODIFY_MESSAGE)
+    }
+
+    private fun navigateToUndoTimestamp(messageId: String) {
+        navigateToTimestampFragment(
+            messageId = messageId,
+            editMode = SubmitTimestampFragment.EDIT_MODE_UNDO_MESSAGE)
+    }
+
+    private fun navigateToTimestampFragment(messageId: String? = null, editMode: String? = null) {
+        val action =
+            SubmissionOverviewFragmentDirections.actionSubmissionOverviewFragmentToSubmitTimestampFragment(
+                messageId = messageId,
+                editMode = editMode
+            )
+
+        navController.navigate(action)
     }
 
     private fun observeUIState() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
-                viewModel.uiState.collect() { uiState ->
+                viewModel.uiState.collect { uiState ->
                     when (uiState) {
                         is SubmissionOverviewUIState.Error -> onError(uiState.message)
                         SubmissionOverviewUIState.Loading -> onLoading()
@@ -68,7 +100,12 @@ class SubmissionOverviewFragment : Fragment() {
         binding.rvSubmittedTimeStamp.visibility = View.VISIBLE
 
         binding.rvSubmittedTimeStamp.adapter =
-            SubmissionDetailRecyclerViewAdapter(submissions)
+            SubmissionDetailRecyclerViewAdapter(
+                submissions,
+                onViewMessage = ::navigateToViewExistingTimestamp,
+                onCopyMessage = ::navigateToEditCopiedTimestamp,
+                onModifyMessage = ::navigateToModifyTimestamp,
+                onUndoMessage = ::navigateToUndoTimestamp)
 
         binding.rvSubmittedTimeStamp.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
