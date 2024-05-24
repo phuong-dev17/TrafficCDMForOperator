@@ -14,12 +14,16 @@ class FakeSubmittedMessageDB : SubmittedMessageDBInterface {
         return db.values.toList()
     }
 
-    override fun clearSubmittedMessages() {
+    override fun deleteSubmittedMessages() {
         db.clear()
     }
 
     override fun getMessage(id: String): SubmissionData? {
         return db[id]
+    }
+
+    override fun deleteMessage(id: String) {
+        db.remove(id)
     }
 
     companion object {

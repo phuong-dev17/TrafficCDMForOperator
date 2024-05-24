@@ -12,7 +12,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
 import org.deplide.application.android.trafficcdmforoperator.databinding.FragmentSubmissionOverviewBinding
 import org.deplide.application.android.trafficcdmforoperator.submission.data.version_0_0_7.SubmissionData
@@ -99,15 +101,43 @@ class SubmissionOverviewFragment : Fragment() {
         binding.pbSubmittedTimeStamp.visibility = View.GONE
         binding.rvSubmittedTimeStamp.visibility = View.VISIBLE
 
-        binding.rvSubmittedTimeStamp.adapter =
-            SubmissionDetailRecyclerViewAdapter(
-                submissions,
-                onItemClick = ::navigateToViewExistingTimestamp,
-                onItemLongClick = ::navigateToEditCopiedTimestamp,
-                onItemSwipe = ::navigateToModifyTimestamp)
+        val adapter = SubmissionDetailRecyclerViewAdapter(
+            submissions,
+            onItemClick = ::navigateToViewExistingTimestamp,
+            onItemLongClick = ::navigateToEditCopiedTimestamp,
+            onItemSwipe = ::navigateToModifyTimestamp)
+
+        binding.rvSubmittedTimeStamp.adapter = adapter
 
         binding.rvSubmittedTimeStamp.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+
+        val itemTouchHelper = ItemTouchHelper(
+            object : ItemTouchHelper.Callback() {
+                override fun getMovementFlags(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder
+                ): Int {
+                    return makeMovementFlags(0, ItemTouchHelper.LEFT)
+                }
+
+                override fun onMove(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder
+                ): Boolean {
+                    return false
+                }
+
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    val position = viewHolder.adapterPosition
+                    val messageId = submissions[position].messageId
+                    navigateToUndoTimestamp(messageId)
+                }
+
+            }
+        )
+        itemTouchHelper.attachToRecyclerView(binding.rvSubmittedTimeStamp)
     }
 
     private fun onLoading() {

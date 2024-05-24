@@ -16,5 +16,6 @@ data class TCMFMessagePayload(
     @Json(name = "service") var service: String? = null,
     @Json(name = "carrier") var carrier: String? = null,
     @Json(name = "attribute") var attribute: String? = null,
-    @Json(name = "operation") var operation: String? = null
+    @Json(name = "operation") var operation: String? = null,
+    @Json(name = "messageId") var undoMessageId: String? = null,
 )

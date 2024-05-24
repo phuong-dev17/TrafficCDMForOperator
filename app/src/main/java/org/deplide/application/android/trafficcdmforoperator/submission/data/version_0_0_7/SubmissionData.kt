@@ -28,13 +28,26 @@ data class SubmissionData(
     var service: String? = null,
     var carrier: String? = null,
     var attribute: String? = null,
-    var operation: String? = null
+    var operation: String? = null,
+    var undoMessageId: String? = null
 ) : Parcelable {
     fun isPayloadValid(): Boolean {
         return when(type) {
             "LocationState" -> isLocationStatePayloadValid()
+            "MessageOperation" -> isMessageOperationPayloadValid()
             else -> false //unknown type
         }
+    }
+
+    private fun isMessageOperationPayloadValid(): Boolean {
+        var isValid = true
+
+        //mandatory fields
+        if (operation == null || undoMessageId == null) {
+            isValid = false
+        }
+
+        return isValid
     }
 
     fun isMessageValid(): Boolean {

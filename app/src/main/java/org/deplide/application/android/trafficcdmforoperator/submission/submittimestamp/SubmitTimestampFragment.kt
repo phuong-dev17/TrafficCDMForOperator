@@ -54,8 +54,21 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
             editMode = it.getString(ARGUMENT_EDIT_MODE)
         }
 
-        if (messageId != null) {
+        if (messageId != null && editMode == EDIT_MODE_UNDO_MESSAGE) {
+            undoMessage(messageId!!)
+        } else if (messageId != null) {
             viewModel.loadMessage(messageId!!)
+        }
+    }
+
+    private fun undoMessage(messageId: String) {
+        authState.performActionWithFreshTokens(authService) { accessToken, _, ex ->
+            if (ex != null) {
+                // negotiation for fresh tokens failed, check ex for more details
+                Toast.makeText(requireContext(), ex.toString(), Toast.LENGTH_LONG).show()
+            }
+
+            viewModel.undoMessage(messageId, accessToken!!)
         }
     }
 
@@ -131,15 +144,20 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
 
     private fun onSuccess() {
         requireContext().hideKeyboard(binding.root)
+        binding.idleView.visibility = View.GONE
         binding.processingView.visibility = View.GONE
         Snackbar.make(binding.root, "Timestamp submitted successfully", Snackbar.LENGTH_INDEFINITE)
             .setAction("Dismiss") {
-                val action =
-                    SubmitTimestampFragmentDirections.actionSubmitTimestampFragmentToSubmissionOverviewFragment()
-
-                navController.navigate(action)
+                navigateBackToSubmissionOverview()
             }
             .show()
+    }
+
+    private fun navigateBackToSubmissionOverview() {
+        val action =
+            SubmitTimestampFragmentDirections.actionSubmitTimestampFragmentToSubmissionOverviewFragment()
+
+        navController.navigate(action)
     }
 
     private fun onError(message: String) {

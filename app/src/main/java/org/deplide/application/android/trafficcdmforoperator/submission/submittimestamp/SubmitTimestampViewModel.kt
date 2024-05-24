@@ -50,7 +50,11 @@ class SubmitTimestampViewModel: ViewModel() {
                             message = TCMFMessage(submissionData)
                         )
 
-                        submittedMessageDB.addMessage(submissionData)
+                        if (submissionData.type == "MessageOperation") {
+                            submittedMessageDB.deleteMessage(submissionData.undoMessageId!!)
+                        } else {
+                            submittedMessageDB.addMessage(submissionData)
+                        }
 
                         _uiState.value = SubmitTmestampUIState.Success
                     } catch (ex: Exception) {
@@ -115,6 +119,24 @@ class SubmitTimestampViewModel: ViewModel() {
                 _uiState.value = SubmitTmestampUIState.Idle(it)
             }?: run {
                 _uiState.value = SubmitTmestampUIState.Idle(null)
+            }
+        }
+    }
+
+    fun undoMessage(messageId: String, accessToken: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.value = SubmitTmestampUIState.Processing
+
+            submittedMessageDB.getMessage(messageId)?.let {
+                val messageOperation = SubmissionData(
+                    type = "MessageOperation",
+                    operation = "invalidate",
+                    grouping = it.grouping,
+                    undoMessageId = it.messageId,
+                )
+                submitTCMFMessage(messageOperation, accessToken)
+            }?: run {
+                _uiState.value = SubmitTmestampUIState.Error("Failed to undo message $messageId")
             }
         }
     }

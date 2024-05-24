@@ -36,7 +36,8 @@ data class TCMFMessage(
             service = submissionData.service,
             carrier = submissionData.carrier,
             operation = submissionData.operation,
-            attribute = submissionData.attribute
+            attribute = submissionData.attribute,
+            undoMessageId = submissionData.undoMessageId
         )
     )
     companion object {

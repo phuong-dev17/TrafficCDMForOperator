@@ -7,7 +7,9 @@ interface SubmittedMessageDBInterface {
 
     fun getSubmittedMessages(): List<SubmissionData>
 
-    fun clearSubmittedMessages()
+    fun deleteSubmittedMessages()
 
     fun getMessage(id: String): SubmissionData?
+
+    fun deleteMessage(id: String)
 }
