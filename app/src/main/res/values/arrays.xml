@@ -40,6 +40,12 @@
         <item>tcmf:location:combi_terminal:</item>
         <item>tcmf:location:train:</item>
     </string-array>
+    <string-array name="predefined_location_prefix_for_location_state">
+        <item>tcmf:location:station:</item>
+        <item>tcmf:location:depot:</item>
+        <item>tcmf:location:combi_terminal:</item>
+        <item>tcmf:location:train:</item>
+    </string-array>
     <string-array name="predefined_reference_object_prefix">
         <item>"tcmf:reference_object:ship:</item>
         <item>"tcmf:reference_object:truck:</item>
