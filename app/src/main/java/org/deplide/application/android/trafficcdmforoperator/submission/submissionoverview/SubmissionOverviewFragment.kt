@@ -102,10 +102,9 @@ class SubmissionOverviewFragment : Fragment() {
         binding.rvSubmittedTimeStamp.adapter =
             SubmissionDetailRecyclerViewAdapter(
                 submissions,
-                onViewMessage = ::navigateToViewExistingTimestamp,
-                onCopyMessage = ::navigateToEditCopiedTimestamp,
-                onModifyMessage = ::navigateToModifyTimestamp,
-                onUndoMessage = ::navigateToUndoTimestamp)
+                onItemClick = ::navigateToViewExistingTimestamp,
+                onItemLongClick = ::navigateToEditCopiedTimestamp,
+                onItemSwipe = ::navigateToModifyTimestamp)
 
         binding.rvSubmittedTimeStamp.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)

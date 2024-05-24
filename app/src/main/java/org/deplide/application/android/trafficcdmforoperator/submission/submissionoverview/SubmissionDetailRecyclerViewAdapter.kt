@@ -8,17 +8,15 @@ import org.deplide.application.android.trafficcdmforoperator.submission.data.ver
 
 class SubmissionDetailRecyclerViewAdapter(
     private val submissions: List<SubmissionData>,
-    private val onViewMessage: (String) -> Unit,
-    private val onCopyMessage: (String) -> Unit,
-    private val onModifyMessage: (String) -> Unit,
-    private val onUndoMessage: (String) -> Unit): RecyclerView.Adapter<SubmissionDetailRecyclerViewAdapter.SubmissionDetailViewHolder>() {
+    private val onItemClick: (String) -> Unit,
+    private val onItemLongClick: (String) -> Unit,
+    private val onItemSwipe: (String) -> Unit): RecyclerView.Adapter<SubmissionDetailRecyclerViewAdapter.SubmissionDetailViewHolder>() {
 
     class SubmissionDetailViewHolder(
         private val binding: CellSubmittedTimestampBinding,
-        private val onViewMessage: (String) -> Unit,
-        private val onCopyMessage: (String) -> Unit,
-        private val onModifyMessage: (String) -> Unit,
-        private val onUndoMessage: (String) -> Unit
+        private val onItemClick: (String) -> Unit,
+        private val onItemLongClick: (String) -> Unit,
+        private val onItemSwipe: (String) -> Unit
     ): RecyclerView.ViewHolder(binding.root){
         fun bind(submissionData: SubmissionData) {
             binding.apply {
@@ -26,10 +24,10 @@ class SubmissionDetailRecyclerViewAdapter(
                 textViewDescription.text = submissionData.getDescription()
 
                 root.setOnClickListener {
-                    onViewMessage(submissionData.messageId)
+                    onItemClick(submissionData.messageId)
                 }
                 root.setOnLongClickListener {
-                    onCopyMessage(submissionData.messageId)
+                    onItemLongClick(submissionData.messageId)
                     true
                 }
             }
@@ -37,10 +35,9 @@ class SubmissionDetailRecyclerViewAdapter(
 
         companion object {
             fun create(parent: ViewGroup,
-                       onViewMessage: (String) -> Unit,
-                       onCopyMessage: (String) -> Unit,
-                       onModifyMessage: (String) -> Unit,
-                       onUndoMessage: (String) -> Unit): SubmissionDetailViewHolder {
+                       onItemClick: (String) -> Unit,
+                       onItemLongClick: (String) -> Unit,
+                       onItemSwipe: (String) -> Unit): SubmissionDetailViewHolder {
                 val binding = CellSubmittedTimestampBinding.inflate(
                     LayoutInflater.from(parent.context),
                     parent,
@@ -48,17 +45,16 @@ class SubmissionDetailRecyclerViewAdapter(
                 )
 
                 return SubmissionDetailViewHolder(binding,
-                    onViewMessage,
-                    onCopyMessage,
-                    onModifyMessage,
-                    onUndoMessage)
+                    onItemClick,
+                    onItemLongClick,
+                    onItemSwipe)
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SubmissionDetailViewHolder {
         return SubmissionDetailViewHolder.create(parent,
-            onViewMessage, onCopyMessage, onModifyMessage, onUndoMessage)
+            onItemClick, onItemLongClick, onItemSwipe)
     }
 
     override fun getItemCount(): Int {
