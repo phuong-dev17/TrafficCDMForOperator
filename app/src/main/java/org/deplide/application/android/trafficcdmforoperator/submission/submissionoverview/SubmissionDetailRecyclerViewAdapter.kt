@@ -3,6 +3,7 @@ package org.deplide.application.android.trafficcdmforoperator.submission.submiss
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import org.deplide.application.android.trafficcdmforoperator.R
 import org.deplide.application.android.trafficcdmforoperator.databinding.CellSubmittedTimestampBinding
 import org.deplide.application.android.trafficcdmforoperator.submission.data.version_0_0_7.SubmissionData
 
@@ -21,7 +22,8 @@ class SubmissionDetailRecyclerViewAdapter(
         fun bind(submissionData: SubmissionData) {
             binding.apply {
                 textViewMessageId.text = submissionData.messageId.split(":")[2]
-                textViewDescription.text = submissionData.getDescription()
+                textViewDescription.text = submissionData.getDescription(
+                    root.context.getString(R.string.date_time_pattern))
 
                 root.setOnClickListener {
                     onItemClick(submissionData.messageId)

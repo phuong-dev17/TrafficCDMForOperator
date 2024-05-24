@@ -3,6 +3,7 @@ package org.deplide.application.android.trafficcdmforoperator.submission.data.ve
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import org.deplide.application.android.trafficcdmforoperator.network.dto.tcmf.version_0_0_7.TCMFMessage
+import org.deplide.application.android.trafficcdmforoperator.submission.util.DateTimeHelper.Companion.convertUTCTimeToSystemDefault
 
 @Parcelize
 data class SubmissionData(
@@ -85,22 +86,23 @@ data class SubmissionData(
         return isValid
     }
 
-    fun getDescription(): String {
+    fun getDescription(dateTimeFormat: String): String {
         return when(type) {
-            "LocationState" -> getDescriptionForLocationState()
+            "LocationState" -> getDescriptionForLocationState(dateTimeFormat)
             else -> "" //unknown type
         }
     }
 
-    private fun getDescriptionForLocationState(): String {
+    private fun getDescriptionForLocationState(dateTimeFormat: String): String {
         val objectType = referenceObject?.split(":")!![2]
         val objectId = referenceObject?.split("${objectType}:")!![1]
         val locationType = location?.split(":")!![2]
         val locationId = location?.split("${locationType}:")!![1]
+        val localTime = convertUTCTimeToSystemDefault(time!!, dateTimeFormat)
         return "$objectType $objectId" +
                 " is $timeType $timeSequence" +
                 " $locationType $locationId" +
-                " at $time"
+                " at $localTime"
     }
 
     companion object {
