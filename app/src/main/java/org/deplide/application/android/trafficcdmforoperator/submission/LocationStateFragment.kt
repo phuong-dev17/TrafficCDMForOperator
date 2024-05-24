@@ -69,7 +69,8 @@ class LocationStateFragment : Fragment(), StateFragmentDataUpdater {
     }
 
     private fun configureAccordingToEditMode() {
-        val isEnabled = if (editMode == null) {
+        val isEnabled = if (editMode == null ||
+            editMode == SubmitTimestampFragment.EDIT_MODE_UNDO_MESSAGE) {
             false
         } else {
             true

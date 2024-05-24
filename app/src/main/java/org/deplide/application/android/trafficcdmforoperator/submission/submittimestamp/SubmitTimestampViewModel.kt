@@ -50,11 +50,8 @@ class SubmitTimestampViewModel: ViewModel() {
                             message = TCMFMessage(submissionData)
                         )
 
-                        if (submissionData.type == "MessageOperation") {
-                            submittedMessageDB.deleteMessage(submissionData.undoMessageId!!)
-                        } else {
-                            submittedMessageDB.addMessage(submissionData)
-                        }
+
+                        submittedMessageDB.addMessage(submissionData)
 
                         _uiState.value = SubmitTmestampUIState.Success
                     } catch (ex: Exception) {
@@ -134,7 +131,28 @@ class SubmitTimestampViewModel: ViewModel() {
                     grouping = it.grouping,
                     undoMessageId = it.messageId,
                 )
-                submitTCMFMessage(messageOperation, accessToken)
+
+                if (messageOperation.isPayloadValid()) {
+                    val userName = getUserNameFromIdToken(accessToken)
+                    fillTCMFMessageMetaData(messageOperation, userName)
+                    fillTCMFMessageGrouping(messageOperation)
+
+                    if (messageOperation.isMessageValid()) {
+                        try {
+                            TrafficCDMApi.retrofit.submitMessage(
+                                token = "Bearer $accessToken",
+                                accept = "application/json",
+                                message = TCMFMessage(messageOperation)
+                            )
+
+                            submittedMessageDB.deleteMessage(messageId)
+
+                            _uiState.value = SubmitTmestampUIState.SuccessUndo
+                        } catch (ex: Exception) {
+                            _uiState.value = SubmitTmestampUIState.Error("Failed to undo message $messageId")
+                        }
+                    }
+                }
             }?: run {
                 _uiState.value = SubmitTmestampUIState.Error("Failed to undo message $messageId")
             }

@@ -54,21 +54,8 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
             editMode = it.getString(ARGUMENT_EDIT_MODE)
         }
 
-        if (messageId != null && editMode == EDIT_MODE_UNDO_MESSAGE) {
-            undoMessage(messageId!!)
-        } else if (messageId != null) {
+        if (messageId != null) {
             viewModel.loadMessage(messageId!!)
-        }
-    }
-
-    private fun undoMessage(messageId: String) {
-        authState.performActionWithFreshTokens(authService) { accessToken, _, ex ->
-            if (ex != null) {
-                // negotiation for fresh tokens failed, check ex for more details
-                Toast.makeText(requireContext(), ex.toString(), Toast.LENGTH_LONG).show()
-            }
-
-            viewModel.undoMessage(messageId, accessToken!!)
         }
     }
 
@@ -95,7 +82,7 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
     }
 
     private fun configureAccordingToEditMode() {
-        binding.edtState.isEnabled = if (editMode == null) {
+        binding.edtState.isEnabled = if (editMode == null || editMode == EDIT_MODE_UNDO_MESSAGE) {
             false
         } else {
             true
@@ -105,6 +92,12 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
             View.GONE
         } else {
             View.VISIBLE
+        }
+
+        if (editMode == EDIT_MODE_MODIFY_MESSAGE) {
+            binding.btnSubmit.setText(R.string.modify_message)
+        } else if (editMode == EDIT_MODE_UNDO_MESSAGE) {
+            binding.btnSubmit.setText(R.string.undo_message)
         }
     }
 
@@ -117,9 +110,18 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
                         SubmitTmestampUIState.Processing -> onProcessing()
                         SubmitTmestampUIState.Success -> onSuccess()
                         is SubmitTmestampUIState.Error -> onError(uiState.message)
+                        SubmitTmestampUIState.SuccessUndo -> onSuccessUndo()
                     }
                 }
             }
+        }
+    }
+
+    private fun onSuccessUndo() {
+        if (editMode == EDIT_MODE_UNDO_MESSAGE) {
+            navigateBackToSubmissionOverview()
+        } else {
+            submitTCMFMessage(submissionData!!)
         }
     }
 
@@ -168,18 +170,33 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
 
     private fun configSubmitButton() {
         binding.btnSubmit.setOnClickListener {
-            submitTCMFMessage()
+            if (editMode == EDIT_MODE_UNDO_MESSAGE || editMode == EDIT_MODE_MODIFY_MESSAGE) {
+                submitUndoMessage(messageId!!)
+            } else {
+                submitTCMFMessage(submissionData!!)
+            }
         }
     }
 
-    private fun submitTCMFMessage() {
+    private fun submitUndoMessage(messageId: String, updateUI: Boolean = false) {
         authState.performActionWithFreshTokens(authService) { accessToken, _, ex ->
             if (ex != null) {
                 // negotiation for fresh tokens failed, check ex for more details
                 Toast.makeText(requireContext(), ex.toString(), Toast.LENGTH_LONG).show()
             }
 
-            viewModel.submitTCMFMessage(submissionData!!, accessToken!!)
+            viewModel.undoMessage(messageId, accessToken!!)
+        }
+    }
+
+    private fun submitTCMFMessage(data: SubmissionData) {
+        authState.performActionWithFreshTokens(authService) { accessToken, _, ex ->
+            if (ex != null) {
+                // negotiation for fresh tokens failed, check ex for more details
+                Toast.makeText(requireContext(), ex.toString(), Toast.LENGTH_LONG).show()
+            }
+
+            viewModel.submitTCMFMessage(data, accessToken!!)
         }
     }
 
@@ -194,10 +211,8 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
     private fun loadStateFragment(timeSequence: String, initialData: SubmissionData? = null) {
         val currentEditingState = getStateFromTimeSequence(timeSequence)
 
-        newTCMFMessage(
-            type = currentEditingState,
-            timeSequence = timeSequence
-        )
+        submissionData = SubmissionData(type = currentEditingState)
+        submissionData!!.timeSequence = timeSequence
 
         val bundle = Bundle()
         bundle.putParcelable(CHILD_ARGUMENT_INITIAL_DATA, initialData)
@@ -252,15 +267,6 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
                 Log.d(TAG, "Unhandled State")
                 ""
             }
-        }
-    }
-
-    private fun newTCMFMessage(type: String, timeSequence: String) {
-        submissionData = SubmissionData(
-            type = type,
-            timeSequence = timeSequence)
-        if (submissionData?.type == SubmissionData.TYPE_MESSAGE_OPERATION) {
-            submissionData?.operation = "invalidate"
         }
     }
 

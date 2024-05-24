@@ -8,4 +8,5 @@ sealed class SubmitTmestampUIState {
 
     data class Error(val message: String) : SubmitTmestampUIState()
     data object Success : SubmitTmestampUIState()
+    data object SuccessUndo : SubmitTmestampUIState()
 }

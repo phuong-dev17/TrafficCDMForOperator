@@ -118,7 +118,7 @@ class SubmissionOverviewFragment : Fragment() {
                     recyclerView: RecyclerView,
                     viewHolder: RecyclerView.ViewHolder
                 ): Int {
-                    return makeMovementFlags(0, ItemTouchHelper.LEFT)
+                    return makeMovementFlags(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT)
                 }
 
                 override fun onMove(
@@ -132,7 +132,12 @@ class SubmissionOverviewFragment : Fragment() {
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                     val position = viewHolder.adapterPosition
                     val messageId = submissions[position].messageId
-                    navigateToUndoTimestamp(messageId)
+                    if (direction == ItemTouchHelper.LEFT) {
+                        navigateToUndoTimestamp(messageId)
+                    } else if (direction == ItemTouchHelper.RIGHT) {
+                        navigateToModifyTimestamp(messageId)
+                    }
+
                 }
 
             }
