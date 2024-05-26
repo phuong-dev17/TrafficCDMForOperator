@@ -1,15 +1,10 @@
 package org.deplide.application.android.trafficcdmforoperator.submission.util
 
-import android.content.Context
-import android.text.format.DateFormat
 import android.util.Log
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
-import org.deplide.application.android.trafficcdmforoperator.R
-import org.deplide.application.android.trafficcdmforoperator.submission.LocationStateFragment
-import org.deplide.application.android.trafficcdmforoperator.submission.data.version_0_0_7.SubmissionData
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime

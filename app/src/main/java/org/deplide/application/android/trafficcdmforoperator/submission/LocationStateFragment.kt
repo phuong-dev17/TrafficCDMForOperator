@@ -2,16 +2,11 @@ package org.deplide.application.android.trafficcdmforoperator.submission
 
 import android.os.Bundle
 import android.text.format.DateFormat.is24HourFormat
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.BundleCompat
 import androidx.core.widget.addTextChangedListener
-import androidx.fragment.app.Fragment
-import com.google.android.material.datepicker.MaterialDatePicker
-import com.google.android.material.timepicker.MaterialTimePicker
-import com.google.android.material.timepicker.TimeFormat
 import org.deplide.application.android.trafficcdmforoperator.R
 import org.deplide.application.android.trafficcdmforoperator.databinding.FragmentLocationStateBinding
 import org.deplide.application.android.trafficcdmforoperator.submission.data.version_0_0_7.SubmissionData
@@ -19,20 +14,9 @@ import org.deplide.application.android.trafficcdmforoperator.submission.submitti
 import org.deplide.application.android.trafficcdmforoperator.submission.util.DateTimeHelper.Companion.convertUTCTimeToSystemDefault
 import org.deplide.application.android.trafficcdmforoperator.submission.util.DateTimeHelper.Companion.getCurrentDateTime
 import org.deplide.application.android.trafficcdmforoperator.submission.util.DateTimePicker
-import org.threeten.bp.Instant
-import org.threeten.bp.ZoneId
-import org.threeten.bp.ZonedDateTime
-import org.threeten.bp.format.DateTimeFormatter
 
-class LocationStateFragment : Fragment(), StateFragmentDataUpdater {
+class LocationStateFragment : BaseStateFragment() {
     private lateinit var binding: FragmentLocationStateBinding
-    private val data: MutableMap<String, String> = mutableMapOf(
-        SubmissionData.FIELD_TIME to "",
-        SubmissionData.FIELD_LOCATION to "",
-        SubmissionData.FIELD_REFERENCE_OBJECT to "",
-        SubmissionData.FIELD_TIME_TYPE to "",
-    )
-    private var dataUpdateListener: StateFragmentDataUpdateListener? = null
     private var initialData: SubmissionData? = null
     private var editMode: String? = null
     private lateinit var dateTimePicker: DateTimePicker
@@ -155,19 +139,6 @@ class LocationStateFragment : Fragment(), StateFragmentDataUpdater {
                 updateData(SubmissionData.FIELD_REFERENCE_OBJECT, initialData!!.referenceObject!!)
             }
         }
-    }
-
-    private fun updateData(key: String, value: String) {
-        data[key] = value
-        informListeners()
-    }
-
-    private fun informListeners() {
-        dataUpdateListener?.onStateFragmentDataUpdate(data)
-    }
-
-    override fun addStateFragmentDataUpdateListener(listener: StateFragmentDataUpdateListener) {
-        dataUpdateListener = listener
     }
 
     companion object {
