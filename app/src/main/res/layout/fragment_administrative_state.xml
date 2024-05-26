@@ -10,16 +10,41 @@
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/time"
+        android:labelFor="@id/edtTimeAdministrativeState"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/txtInputLayoutTime"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:endIconDrawable="@drawable/calendar_icon">
+
+        <AutoCompleteTextView
+            android:id="@+id/edtTimeAdministrativeState"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="datetime"
+            android:hint="@string/date_time_pattern"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="@string/service"
         android:labelFor="@id/edtServiceAdministrativeState"/>
 
     <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <com.google.android.material.textfield.TextInputEditText
+        <AutoCompleteTextView
             android:id="@+id/edtServiceAdministrativeState"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="text"
+            app:simpleItems="@array/predefined_service_prefix"
             />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -31,12 +56,15 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
 
-        <com.google.android.material.textfield.TextInputEditText
+        <AutoCompleteTextView
             android:id="@+id/edtLocationAdministrativeState"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="text"
+            app:simpleItems="@array/predefined_location_prefix"
             />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -49,12 +77,15 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
 
-        <com.google.android.material.textfield.TextInputEditText
+        <AutoCompleteTextView
             android:id="@+id/edtReferenceObjectAdministrativeState"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="text"
+            app:simpleItems="@array/predefined_reference_object_prefix"
             />
 
     </com.google.android.material.textfield.TextInputLayout>
