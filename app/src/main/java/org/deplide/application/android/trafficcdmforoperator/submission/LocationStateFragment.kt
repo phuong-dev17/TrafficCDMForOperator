@@ -18,6 +18,7 @@ import org.deplide.application.android.trafficcdmforoperator.submission.data.ver
 import org.deplide.application.android.trafficcdmforoperator.submission.submittimestamp.SubmitTimestampFragment
 import org.deplide.application.android.trafficcdmforoperator.submission.util.DateTimeHelper.Companion.convertUTCTimeToSystemDefault
 import org.deplide.application.android.trafficcdmforoperator.submission.util.DateTimeHelper.Companion.getCurrentDateTime
+import org.deplide.application.android.trafficcdmforoperator.submission.util.DateTimePicker
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
@@ -32,10 +33,9 @@ class LocationStateFragment : Fragment(), StateFragmentDataUpdater {
         SubmissionData.FIELD_TIME_TYPE to "",
     )
     private var dataUpdateListener: StateFragmentDataUpdateListener? = null
-    private lateinit var datePicker:  MaterialDatePicker<Long>
-    private lateinit var timePicker: MaterialTimePicker
     private var initialData: SubmissionData? = null
     private var editMode: String? = null
+    private lateinit var dateTimePicker: DateTimePicker
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,50 +101,15 @@ class LocationStateFragment : Fragment(), StateFragmentDataUpdater {
             )
 
             txtInputLayoutTimeLocationState.setEndIconOnClickListener {
-                datePicker =
-                    MaterialDatePicker.Builder.datePicker()
-                        .setTitleText("Select date")
-                        .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
-                        .build()
-
-                datePicker.addOnPositiveButtonClickListener {
-                    Log.d(TAG, "selected date: $it. ${datePicker.selection}")
-                    var timeInMilliseconds = it
-
-                    val isSystem24Hour = is24HourFormat(requireContext())
-                    val clockFormat = if (isSystem24Hour) TimeFormat.CLOCK_24H else TimeFormat.CLOCK_12H
-
-                    timePicker =
-                        MaterialTimePicker.Builder()
-                            .setTimeFormat(clockFormat)
-                            .setTitleText("Select time")
-                            .build()
-
-                    timePicker.addOnPositiveButtonClickListener {
-                        Log.d(TAG, "selected time: ${timePicker.hour}:${timePicker.minute}")
-
-                        // Convert hours to milliseconds
-                        val hoursInMilliseconds = timePicker.hour * 60 * 60 * 1000
-
-                        // Convert minutes to milliseconds
-                        val minutesInMilliseconds = timePicker.minute * 60 * 1000
-                        timeInMilliseconds += hoursInMilliseconds + minutesInMilliseconds
-
-                        val instant = Instant.ofEpochMilli(timeInMilliseconds)
-                        val zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.of("UTC"))
-
-                        val sdf = DateTimeFormatter.ofPattern(getString(R.string.date_time_pattern))
-                        val dateTime = sdf.format(zonedDateTime)
-
-                        Log.d(TAG, "dateTime: $dateTime")
-
-                        edtTimeLocationState.setText(dateTime)
-                        updateData(SubmissionData.FIELD_TIME, dateTime)
-                    }
-
-                    timePicker.show(childFragmentManager, TAG)
+                dateTimePicker = DateTimePicker(
+                    getString(R.string.date_time_pattern),
+                    is24HourFormat(requireContext()),
+                    childFragmentManager
+                ) {dateTime ->
+                    edtTimeLocationState.setText(dateTime)
+                    updateData(SubmissionData.FIELD_TIME, dateTime)
                 }
-                datePicker.show(childFragmentManager, TAG)
+                dateTimePicker.show()
             }
 
             edtLocationLocationState.addTextChangedListener(
