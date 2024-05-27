@@ -46,7 +46,7 @@ data class SubmissionData(
     }
 
     private fun isGroupingValid(): Boolean {
-        return true
+        return grouping.isNotEmpty()
     }
 
     private fun isMetaDataValid(): Boolean {
@@ -80,11 +80,12 @@ data class SubmissionData(
         var isValid = true
 
         //mandatory fields
-        if (time == null || service == null || timeSequence == null) {
+        if (time == null || service == null ||
+                timeSequence == null || referenceObject == null) {
             isValid = false
         }
 
-        //optional fields: referenceObjects, location
+        //optional fields: location
 
         //prohibited fields
         if (timeType != null || carrier != null
@@ -115,11 +116,20 @@ data class SubmissionData(
     }
 
     private fun getDescriptionForLocationState(dateTimeFormat: String): String {
+        val timeTypeString = if (timeType != null) {
+            if (timeType == "actual") {
+                "has"
+            } else {
+                "$timeType to"
+            }
+        } else {
+            ""
+        }
         val locationType = location?.split(":")!![2]
         val locationId = location?.split("${locationType}:")!![1]
         val timeSequenceString = timeSequence?.replace("_", " ")
         val localTime = convertUTCTimeToSystemDefault(time!!, dateTimeFormat)
-        return "$timeType to $timeSequenceString" +
+        return "$timeTypeString $timeSequenceString" +
                 " $locationType $locationId" +
                 " at $localTime"
     }
