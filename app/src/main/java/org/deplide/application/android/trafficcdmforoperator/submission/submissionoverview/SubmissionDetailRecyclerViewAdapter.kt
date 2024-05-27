@@ -21,7 +21,7 @@ class SubmissionDetailRecyclerViewAdapter(
     ): RecyclerView.ViewHolder(binding.root){
         fun bind(submissionData: SubmissionData) {
             binding.apply {
-                textViewMessageId.text = submissionData.messageId.split(":")[2]
+                textViewObjectInConcern.text = submissionData.getObjectInConcern()
                 textViewDescription.text = submissionData.getDescription(
                     root.context.getString(R.string.date_time_pattern))
 

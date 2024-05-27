@@ -36,19 +36,9 @@ data class SubmissionData(
         return when(type) {
             "LocationState" -> isLocationStatePayloadValid()
             "MessageOperation" -> isMessageOperationPayloadValid()
+            "AdministrativeState" -> isAdministrativeStatePayloadValid()
             else -> false //unknown type
         }
-    }
-
-    private fun isMessageOperationPayloadValid(): Boolean {
-        var isValid = true
-
-        //mandatory fields
-        if (operation == null || undoMessageId == null) {
-            isValid = false
-        }
-
-        return isValid
     }
 
     fun isMessageValid(): Boolean {
@@ -56,7 +46,7 @@ data class SubmissionData(
     }
 
     private fun isGroupingValid(): Boolean {
-        return grouping.isNotEmpty()
+        return true
     }
 
     private fun isMetaDataValid(): Boolean {
@@ -86,23 +76,98 @@ data class SubmissionData(
         return isValid
     }
 
+    private fun isAdministrativeStatePayloadValid(): Boolean {
+        var isValid = true
+
+        //mandatory fields
+        if (time == null || service == null || timeSequence == null) {
+            isValid = false
+        }
+
+        //optional fields: referenceObjects, location
+
+        //prohibited fields
+        if (timeType != null || carrier != null
+            || attribute != null || operation != null) {
+            isValid = false
+        }
+
+        return isValid
+    }
+
+    private fun isMessageOperationPayloadValid(): Boolean {
+        var isValid = true
+
+        //mandatory fields
+        if (operation == null || undoMessageId == null) {
+            isValid = false
+        }
+
+        return isValid
+    }
+
     fun getDescription(dateTimeFormat: String): String {
         return when(type) {
             "LocationState" -> getDescriptionForLocationState(dateTimeFormat)
+            "AdministrativeState" -> getDescriptionForAdministrativeState(dateTimeFormat)
             else -> "" //unknown type
         }
     }
 
     private fun getDescriptionForLocationState(dateTimeFormat: String): String {
-        val objectType = referenceObject?.split(":")!![2]
-        val objectId = referenceObject?.split("${objectType}:")!![1]
         val locationType = location?.split(":")!![2]
         val locationId = location?.split("${locationType}:")!![1]
+        val timeSequenceString = timeSequence?.replace("_", " ")
         val localTime = convertUTCTimeToSystemDefault(time!!, dateTimeFormat)
-        return "$objectType $objectId" +
-                " is $timeType $timeSequence" +
+        return "$timeType to $timeSequenceString" +
                 " $locationType $locationId" +
                 " at $localTime"
+    }
+
+    private fun getDescriptionForAdministrativeState(dateTimeFormat: String): String {
+        val timeSequenceString = timeSequence?.replace("_", " ")
+        val localTime = convertUTCTimeToSystemDefault(time!!, dateTimeFormat)
+        val locationString = if (location != null) {
+            val locationType = location?.split(":")!![2]
+            val locationId = location?.split("${locationType}:")!![1]
+
+            "at $locationType $locationId"
+        } else {
+            ""
+        }
+
+        val objectString = if (referenceObject != null) {
+            val objectType = referenceObject?.split(":")!![2]
+            val objectId = referenceObject?.split("${objectType}:")!![1]
+
+            "for $objectType $objectId"
+        } else {
+            ""
+        }
+
+        return "$timeSequenceString at $localTime $objectString $locationString"
+    }
+
+    fun getObjectInConcern(): String {
+        return when(type) {
+            "LocationState" -> getObjectInConcernForLocationState()
+            "AdministrativeState" -> getObjectInConcernForAdministrativeState()
+            else -> "" //unknown type
+        }
+    }
+
+    private fun getObjectInConcernForLocationState(): String {
+        val objectType = referenceObject?.split(":")!![2]
+        val objectTypeUppercase = objectType.replaceFirstChar { it.uppercase() }
+        val objectId = referenceObject?.split("${objectType}:")!![1]
+
+        return "$objectTypeUppercase $objectId"
+    }
+
+    private fun getObjectInConcernForAdministrativeState(): String {
+        val service = service?.split(":")!![2]
+
+        return "Service $service"
     }
 
     companion object {
