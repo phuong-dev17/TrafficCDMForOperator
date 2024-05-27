@@ -2,6 +2,7 @@ package org.deplide.application.android.trafficcdmforoperator.submission.submiss
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.annotation.DrawableRes
 import androidx.recyclerview.widget.RecyclerView
 import org.deplide.application.android.trafficcdmforoperator.R
 import org.deplide.application.android.trafficcdmforoperator.databinding.CellSubmittedTimestampBinding
@@ -21,7 +22,10 @@ class SubmissionDetailRecyclerViewAdapter(
     ): RecyclerView.ViewHolder(binding.root){
         fun bind(submissionData: SubmissionData) {
             binding.apply {
-                textViewObjectInConcern.text = submissionData.getObjectInConcern()
+                val objectInConcern = submissionData.getObjectInConcern()
+                val objectType = objectInConcern.split(" ")
+                imageViewObjectInConcern.setImageResource(getObjectTypeIcon(objectType[0]))
+                textViewObjectInConcern.text = objectInConcern
                 textViewDescription.text = submissionData.getDescription(
                     root.context.getString(R.string.date_time_pattern))
 
@@ -32,6 +36,17 @@ class SubmissionDetailRecyclerViewAdapter(
                     onItemLongClick(submissionData.messageId)
                     true
                 }
+            }
+        }
+
+        private fun getObjectTypeIcon(objectType: String): Int {
+            return when (objectType) {
+                "Truck" -> R.drawable.local_shipping_24dp
+                "Ship" -> R.drawable.directions_boat_24dp
+                "Train" -> R.drawable.train_24dp
+                "Airplane" -> R.drawable.flight_24dp
+                "Service" -> R.drawable.support_agent_24dp
+                else -> R.drawable.broken_image_24dp
             }
         }
 
