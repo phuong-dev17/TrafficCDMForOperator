@@ -53,18 +53,22 @@ class LocationStateFragment : BaseStateFragment() {
     }
 
     private fun configureAccordingToEditMode() {
-        val isEnabled = if (editMode == null ||
-            editMode == SubmitTimestampFragment.EDIT_MODE_UNDO_MESSAGE) {
-            false
-        } else {
-            true
-        }
+        val isEnabled = isTheFieldEnabled()
 
         binding.apply {
             edtTimeLocationState.isEnabled = isEnabled
             edtTimeTypeLocationState.isEnabled = isEnabled
             edtLocationLocationState.isEnabled = isEnabled
             edtReferenceObjectLocationState.isEnabled = isEnabled
+        }
+    }
+
+    private fun isTheFieldEnabled(): Boolean {
+        return if (editMode == null ||
+            editMode == SubmitTimestampFragment.EDIT_MODE_UNDO_MESSAGE) {
+            false
+        } else {
+            true
         }
     }
 
