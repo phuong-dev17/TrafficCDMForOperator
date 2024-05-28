@@ -10,7 +10,7 @@
 
     <style name="OverlayTheme.Toolbar" parent="ThemeOverlay.AppCompat.ActionBar">
         <item name="android:fontFamily">@font/lato_bold</item>
-        <item name="android:textColor">@color/darkSapphire</item>
+        <item name="android:textColor">@color/primary_dark</item>
     </style>
     <style name="Theme.TrafficCDMForOperator" parent="Base.Theme.TrafficCDMForOperator" />
 </resources>
