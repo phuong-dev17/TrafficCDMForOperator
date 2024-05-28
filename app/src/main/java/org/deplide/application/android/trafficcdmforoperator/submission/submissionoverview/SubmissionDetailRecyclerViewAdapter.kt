@@ -2,7 +2,6 @@ package org.deplide.application.android.trafficcdmforoperator.submission.submiss
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.annotation.DrawableRes
 import androidx.recyclerview.widget.RecyclerView
 import org.deplide.application.android.trafficcdmforoperator.R
 import org.deplide.application.android.trafficcdmforoperator.databinding.CellSubmittedTimestampBinding
@@ -12,13 +11,13 @@ class SubmissionDetailRecyclerViewAdapter(
     private val submissions: List<SubmissionData>,
     private val onItemClick: (String) -> Unit,
     private val onItemLongClick: (String) -> Unit,
-    private val onItemSwipe: (String) -> Unit): RecyclerView.Adapter<SubmissionDetailRecyclerViewAdapter.SubmissionDetailViewHolder>() {
+    private val onItemSwipeLeft: (String) -> Unit,
+    private val onItemSwipeRight: (String) -> Unit): RecyclerView.Adapter<SubmissionDetailRecyclerViewAdapter.SubmissionDetailViewHolder>() {
 
     class SubmissionDetailViewHolder(
         private val binding: CellSubmittedTimestampBinding,
         private val onItemClick: (String) -> Unit,
-        private val onItemLongClick: (String) -> Unit,
-        private val onItemSwipe: (String) -> Unit
+        private val onItemLongClick: (String) -> Unit
     ): RecyclerView.ViewHolder(binding.root){
         fun bind(submissionData: SubmissionData) {
             binding.apply {
@@ -53,8 +52,7 @@ class SubmissionDetailRecyclerViewAdapter(
         companion object {
             fun create(parent: ViewGroup,
                        onItemClick: (String) -> Unit,
-                       onItemLongClick: (String) -> Unit,
-                       onItemSwipe: (String) -> Unit): SubmissionDetailViewHolder {
+                       onItemLongClick: (String) -> Unit): SubmissionDetailViewHolder {
                 val binding = CellSubmittedTimestampBinding.inflate(
                     LayoutInflater.from(parent.context),
                     parent,
@@ -63,15 +61,14 @@ class SubmissionDetailRecyclerViewAdapter(
 
                 return SubmissionDetailViewHolder(binding,
                     onItemClick,
-                    onItemLongClick,
-                    onItemSwipe)
+                    onItemLongClick)
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SubmissionDetailViewHolder {
         return SubmissionDetailViewHolder.create(parent,
-            onItemClick, onItemLongClick, onItemSwipe)
+            onItemClick, onItemLongClick)
     }
 
     override fun getItemCount(): Int {
@@ -80,5 +77,21 @@ class SubmissionDetailRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: SubmissionDetailViewHolder, position: Int) {
         holder.bind(submissions[position])
+    }
+
+    fun itemSwipedRight(position: Int) {
+        val messageId = getMessageIdAtPosition(position)
+
+        onItemSwipeRight(messageId)
+    }
+
+    fun itemSwipedLeft(position: Int) {
+        val messageId = getMessageIdAtPosition(position)
+
+        onItemSwipeLeft(messageId)
+    }
+
+    private fun getMessageIdAtPosition(position: Int): String {
+        return submissions[position].messageId
     }
 }

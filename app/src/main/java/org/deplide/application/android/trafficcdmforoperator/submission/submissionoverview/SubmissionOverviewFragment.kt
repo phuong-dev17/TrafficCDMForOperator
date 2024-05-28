@@ -14,7 +14,6 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
 import org.deplide.application.android.trafficcdmforoperator.databinding.FragmentSubmissionOverviewBinding
 import org.deplide.application.android.trafficcdmforoperator.submission.data.version_0_0_7.SubmissionData
@@ -105,7 +104,8 @@ class SubmissionOverviewFragment : Fragment() {
             submissions,
             onItemClick = ::navigateToViewExistingTimestamp,
             onItemLongClick = ::navigateToEditCopiedTimestamp,
-            onItemSwipe = ::navigateToModifyTimestamp)
+            onItemSwipeLeft = ::navigateToUndoTimestamp,
+            onItemSwipeRight = ::navigateToModifyTimestamp)
 
         binding.rvSubmittedTimeStamp.adapter = adapter
 
@@ -113,35 +113,7 @@ class SubmissionOverviewFragment : Fragment() {
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
 
         val itemTouchHelper = ItemTouchHelper(
-            object : ItemTouchHelper.Callback() {
-                override fun getMovementFlags(
-                    recyclerView: RecyclerView,
-                    viewHolder: RecyclerView.ViewHolder
-                ): Int {
-                    return makeMovementFlags(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT)
-                }
-
-                override fun onMove(
-                    recyclerView: RecyclerView,
-                    viewHolder: RecyclerView.ViewHolder,
-                    target: RecyclerView.ViewHolder
-                ): Boolean {
-                    return false
-                }
-
-                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                    val position = viewHolder.adapterPosition
-                    val messageId = submissions[position].messageId
-                    if (direction == ItemTouchHelper.LEFT) {
-                        navigateToUndoTimestamp(messageId)
-                    } else if (direction == ItemTouchHelper.RIGHT) {
-                        navigateToModifyTimestamp(messageId)
-                    }
-
-                }
-
-            }
-        )
+            SubmissionOverviewSwipeCallback(adapter, requireContext()))
         itemTouchHelper.attachToRecyclerView(binding.rvSubmittedTimeStamp)
     }
 
