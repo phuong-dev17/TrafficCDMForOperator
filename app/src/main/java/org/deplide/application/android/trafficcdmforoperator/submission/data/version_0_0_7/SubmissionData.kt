@@ -181,7 +181,6 @@ data class SubmissionData(
     }
 
     companion object {
-        const val TYPE_MESSAGE_OPERATION = "MessageOperation"
         const val CARRIER_PREFIX = "tcmf:carrier:"
         const val REFERENCE_OBJECT_PREFIX = "tcmf:reference_object:"
         const val FIELD_TIME = "Time"
