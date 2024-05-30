@@ -18,4 +18,7 @@
     <string name="submission_item_action_undo">Undo</string>
     <string name="modify_message">Modify</string>
     <string name="undo_message">Undo</string>
+    <string name="time_type_planned">Planned</string>
+    <string name="time_type_estimated">Estimated</string>
+    <string name="time_type_actual">Actual</string>
 </resources>

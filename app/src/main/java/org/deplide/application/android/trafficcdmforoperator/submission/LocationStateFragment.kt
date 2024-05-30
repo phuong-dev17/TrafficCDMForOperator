@@ -57,7 +57,7 @@ class LocationStateFragment : BaseStateFragment() {
 
         binding.apply {
             edtTimeLocationState.isEnabled = isEnabled
-            edtTimeTypeLocationState.isEnabled = isEnabled
+            radioGroupTimeTypeLocationState.isEnabled = isEnabled
             edtLocationLocationState.isEnabled = isEnabled
             edtReferenceObjectLocationState.isEnabled = isEnabled
         }
@@ -82,11 +82,25 @@ class LocationStateFragment : BaseStateFragment() {
                 }
             )
 
-            edtTimeTypeLocationState.addTextChangedListener(
-                onTextChanged = { text, _, _, _ ->
-                    updateData(SubmissionData.FIELD_TIME_TYPE, text!!.toString())
-                }
-            )
+            updateData(SubmissionData.FIELD_TIME_TYPE,
+                getString(R.string.time_type_actual).replaceFirstChar { it.lowercase() })
+            radioGroupTimeTypeLocationState
+                .setOnCheckedChangeListener{ _, checkedId ->
+                    when (checkedId) {
+                        R.id.radioBtnLocationStatePlanned -> {
+                            updateData(SubmissionData.FIELD_TIME_TYPE,
+                                getString(R.string.time_type_planned).replaceFirstChar { it.lowercase() })
+                        }
+                        R.id.radioBtnLocationStateEstimated -> {
+                            updateData(SubmissionData.FIELD_TIME_TYPE,
+                                getString(R.string.time_type_estimated).replaceFirstChar { it.lowercase() })
+                        }
+                        R.id.radioBtnLocationStateActual -> {
+                            updateData(SubmissionData.FIELD_TIME_TYPE,
+                                getString(R.string.time_type_actual).replaceFirstChar { it.lowercase() })
+                        }
+                    }
+            }
 
             txtInputLayoutTimeLocationState.setEndIconOnClickListener {
                 dateTimePicker = DateTimePicker(
@@ -133,7 +147,21 @@ class LocationStateFragment : BaseStateFragment() {
                 edtTimeLocationState.setText(localTime)
                 updateData(SubmissionData.FIELD_TIME, localTime)
 
-                edtTimeTypeLocationState.setText(initialData!!.timeType)
+                when (initialData!!.timeType) {
+                    getString(R.string.time_type_planned)
+                        .replaceFirstChar { it.lowercase() } -> {
+                        radioGroupTimeTypeLocationState.check(R.id.radioBtnLocationStateActual)
+                    }
+                    getString(R.string.time_type_estimated)
+                        .replaceFirstChar { it.lowercase() } -> {
+                        radioGroupTimeTypeLocationState.check(R.id.radioBtnLocationStateEstimated)
+                    }
+                    getString(R.string.time_type_actual)
+                        .replaceFirstChar { it.lowercase() } -> {
+                        radioGroupTimeTypeLocationState.check(R.id.radioBtnLocationStateActual)
+                    }
+                }
+
                 updateData(SubmissionData.FIELD_TIME_TYPE, initialData!!.timeType!!)
 
                 edtLocationLocationState.setText(initialData!!.location)
