@@ -2,10 +2,12 @@ package org.deplide.application.android.trafficcdmforoperator.submission.submitt
 
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
 import androidx.constraintlayout.widget.ConstraintSet
@@ -28,6 +30,7 @@ import org.deplide.application.android.trafficcdmforoperator.submission.Administ
 import org.deplide.application.android.trafficcdmforoperator.submission.LocationStateFragment
 import org.deplide.application.android.trafficcdmforoperator.submission.StateFragmentDataUpdateListener
 import org.deplide.application.android.trafficcdmforoperator.submission.data.version_0_0_7.SubmissionData
+import org.deplide.application.android.trafficcdmforoperator.submission.submissionoverview.SubmissionOverviewFragment
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
 import org.threeten.bp.format.DateTimeFormatter
@@ -77,6 +80,14 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
         super.onViewCreated(view, savedInstanceState)
 
         navController = view.findNavController()
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    navigateBackToSubmissionOverview()
+                }
+            }
+        )
 
         configureAccordingToEditMode()
 
@@ -175,11 +186,9 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
         requireContext().hideKeyboard(binding.root)
         binding.idleView.visibility = View.GONE
         binding.processingView.visibility = View.GONE
-        Snackbar.make(binding.root, "Timestamp submitted successfully", Snackbar.LENGTH_INDEFINITE)
-            .setAction("Dismiss") {
-                navigateBackToSubmissionOverview()
-            }
+        Snackbar.make(binding.root, "Timestamp submitted successfully", Snackbar.LENGTH_SHORT)
             .show()
+        navigateBackToSubmissionOverview()
     }
 
     private fun navigateBackToSubmissionOverview() {

@@ -2,6 +2,7 @@ package org.deplide.application.android.trafficcdmforoperator.submission
 
 import android.os.Bundle
 import android.text.format.DateFormat.is24HourFormat
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -46,10 +47,10 @@ class LocationStateFragment : BaseStateFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        configureAccordingToEditMode()
         setCurrentTimeForTimeField()
         configureListeners()
         loadInitialData()
+        configureAccordingToEditMode()
     }
 
     private fun configureAccordingToEditMode() {
@@ -57,7 +58,11 @@ class LocationStateFragment : BaseStateFragment() {
 
         binding.apply {
             edtTimeLocationState.isEnabled = isEnabled
+            txtInputLayoutTimeLocationState.isEndIconVisible = isEnabled
             radioGroupTimeTypeLocationState.isEnabled = isEnabled
+            radioBtnLocationStatePlanned.isEnabled = isEnabled
+            radioBtnLocationStateEstimated.isEnabled = isEnabled
+            radioBtnLocationStateActual.isEnabled = isEnabled
             edtLocationLocationState.isEnabled = isEnabled
             edtReferenceObjectLocationState.isEnabled = isEnabled
         }
@@ -150,18 +155,24 @@ class LocationStateFragment : BaseStateFragment() {
                 when (initialData!!.timeType) {
                     getString(R.string.time_type_planned)
                         .replaceFirstChar { it.lowercase() } -> {
-                        radioGroupTimeTypeLocationState.check(R.id.radioBtnLocationStateActual)
+                            Log.d(TAG, "loadInitialData: planned")
+                        radioGroupTimeTypeLocationState.check(R.id.radioBtnLocationStatePlanned)
                     }
                     getString(R.string.time_type_estimated)
                         .replaceFirstChar { it.lowercase() } -> {
+                            Log.d(TAG, "loadInitialData: estimated")
                         radioGroupTimeTypeLocationState.check(R.id.radioBtnLocationStateEstimated)
                     }
                     getString(R.string.time_type_actual)
                         .replaceFirstChar { it.lowercase() } -> {
+                            Log.d(TAG, "loadInitialData: actual")
+                        radioGroupTimeTypeLocationState.check(R.id.radioBtnLocationStateActual)
+                    }
+                    else -> {
+                        Log.d(TAG, "loadInitialData: ${initialData!!.timeType}")
                         radioGroupTimeTypeLocationState.check(R.id.radioBtnLocationStateActual)
                     }
                 }
-
                 updateData(SubmissionData.FIELD_TIME_TYPE, initialData!!.timeType!!)
 
                 edtLocationLocationState.setText(initialData!!.location)

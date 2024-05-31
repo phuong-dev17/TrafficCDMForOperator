@@ -6,13 +6,19 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import net.openid.appauth.EndSessionRequest
 import org.deplide.application.android.trafficcdmforoperator.AuthInfoProvider
 import org.deplide.application.android.trafficcdmforoperator.AuthInfoProvider.Companion.END_SESSION_REDIRECT_URI
@@ -22,7 +28,7 @@ import org.deplide.application.android.trafficcdmforoperator.databinding.Activit
 import org.deplide.application.android.trafficcdmforoperator.login.LoginActivity
 
 
-class SubmissionActivity : AppCompatActivity() {
+class SubmissionActivity : AppCompatActivity(), OnBackPressListener {
     private lateinit var binding: ActivitySubmissionBinding
     private lateinit var navController: NavController
     private lateinit var logOutActivityLauncher: ActivityResultLauncher<Intent>
@@ -35,6 +41,7 @@ class SubmissionActivity : AppCompatActivity() {
         get() = _authInfoProvider.authService
     private val serviceConfiguration
         get() = _authInfoProvider.serviceConfiguration
+    private var backPressedOnce = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +54,10 @@ class SubmissionActivity : AppCompatActivity() {
         logOutActivityLauncher = setupLogOutActivityLauncher()
 
         configureTopAppBar()
+
+        onBackPressedDispatcher.addCallback {
+            onBackPress()
+        }
     }
 
     private fun configureTopAppBar() {
@@ -117,6 +128,22 @@ class SubmissionActivity : AppCompatActivity() {
         private const val TAG = "SubmissionActivity"
         fun intent(srcCtx: Context): Intent {
             return Intent(srcCtx, SubmissionActivity::class.java)
+        }
+    }
+
+    override fun onBackPress() {
+        if (backPressedOnce) {
+            logout()
+        } else {
+            backPressedOnce = true;
+            Snackbar.make(
+                binding.root,
+                "Press back again to logout",
+                Snackbar.LENGTH_SHORT).show()
+            lifecycleScope.launch {
+                delay(2000)
+                backPressedOnce = false
+            }
         }
     }
 }

@@ -2,9 +2,11 @@ package org.deplide.application.android.trafficcdmforoperator.submission.submiss
 
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -14,8 +16,12 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.deplide.application.android.trafficcdmforoperator.databinding.FragmentSubmissionOverviewBinding
+import org.deplide.application.android.trafficcdmforoperator.submission.OnBackPressListener
+import org.deplide.application.android.trafficcdmforoperator.submission.SubmissionActivity
 import org.deplide.application.android.trafficcdmforoperator.submission.data.version_0_0_7.SubmissionData
 import org.deplide.application.android.trafficcdmforoperator.submission.submittimestamp.SubmitTimestampFragment
 
@@ -23,6 +29,7 @@ class SubmissionOverviewFragment : Fragment() {
     private lateinit var binding: FragmentSubmissionOverviewBinding
     private lateinit var navController: NavController
     private val viewModel: SubmissionOverviewViewModel by viewModels()
+    private var backPressListener: OnBackPressListener? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -36,11 +43,23 @@ class SubmissionOverviewFragment : Fragment() {
 
         navController = view.findNavController()
 
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    (requireActivity() as SubmissionActivity).onBackPress()
+                }
+            }
+        )
+
         observeUIState()
 
         binding.fabSubmitNewTimestamp.setOnClickListener {
             navigateToSubmitNewTimestamp()
         }
+    }
+
+    fun addOnBackPressListener(listener: OnBackPressListener) {
+        backPressListener = listener
     }
 
     private fun navigateToSubmitNewTimestamp() {

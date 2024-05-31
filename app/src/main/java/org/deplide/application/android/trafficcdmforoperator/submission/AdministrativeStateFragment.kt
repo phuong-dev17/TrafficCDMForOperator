@@ -44,10 +44,10 @@ class AdministrativeStateFragment : BaseStateFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        configureAccordingToEditMode()
         setCurrentTimeForTimeField()
         configureListeners()
         loadInitialData()
+        configureAccordingToEditMode()
     }
 
     private fun configureAccordingToEditMode() {
@@ -55,6 +55,7 @@ class AdministrativeStateFragment : BaseStateFragment() {
 
         binding.apply {
             edtTimeAdministrativeState.isEnabled = isEnabled
+            txtInputLayoutTimeAdministrativeState.isEndIconVisible = isEnabled
             edtServiceAdministrativeState.isEnabled = isEnabled
             edtLocationAdministrativeState.isEnabled = isEnabled
             edtReferenceObjectAdministrativeState.isEnabled = isEnabled
