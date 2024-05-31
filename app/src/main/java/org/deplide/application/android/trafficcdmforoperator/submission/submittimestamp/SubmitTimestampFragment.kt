@@ -6,6 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.content.ContextCompat.getColor
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -29,6 +33,7 @@ import org.threeten.bp.ZoneId
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.DateTimeParseException
 import java.util.Calendar
+
 
 class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
     private lateinit var binding: FragmentSubmitTimestampBinding
@@ -76,7 +81,8 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
         configureAccordingToEditMode()
 
         configureStateDropdownList()
-        configSubmitButton()
+        configBackButton()
+        configProceedButton()
 
         observerUiState()
     }
@@ -88,17 +94,38 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
             true
         }
 
-        binding.btnSubmit.visibility = if (editMode == null) {
-            View.GONE
+        if (editMode == null) {
+            binding.btnProceed.visibility =  View.GONE
+            binding.btnBack.visibility = View.VISIBLE
+
+            configureBackButtonWidthToMatchParent()
         } else {
-            View.VISIBLE
+            binding.btnProceed.visibility = View.VISIBLE
         }
 
         if (editMode == EDIT_MODE_MODIFY_MESSAGE) {
-            binding.btnSubmit.setText(R.string.modify_message)
+            binding.btnProceed.setText(R.string.modify_message)
         } else if (editMode == EDIT_MODE_UNDO_MESSAGE) {
-            binding.btnSubmit.setText(R.string.undo_message)
+            binding.btnProceed.setText(R.string.undo_message)
+            binding.btnProceed.setBackgroundColor(getColor(requireContext(), R.color.warning))
         }
+    }
+
+    private fun configureBackButtonWidthToMatchParent() {
+        val params: LayoutParams = binding.btnBack.layoutParams as LayoutParams
+        params.marginEnd = 0
+        binding.btnBack.setLayoutParams(params)
+
+        val parentConstraintLayout: ConstraintLayout = binding.controlButtonGroup
+        val constraintSet = ConstraintSet()
+        constraintSet.clone(parentConstraintLayout)
+        constraintSet.connect(
+            binding.btnBack.id,
+            ConstraintSet.END,
+            ConstraintSet.PARENT_ID,
+            ConstraintSet.END
+        )
+        constraintSet.applyTo(parentConstraintLayout)
     }
 
     private fun observerUiState() {
@@ -168,13 +195,19 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
     }
 
-    private fun configSubmitButton() {
-        binding.btnSubmit.setOnClickListener {
+    private fun configProceedButton() {
+        binding.btnProceed.setOnClickListener {
             if (editMode == EDIT_MODE_UNDO_MESSAGE || editMode == EDIT_MODE_MODIFY_MESSAGE) {
                 submitUndoMessage(messageId!!)
             } else {
                 submitTCMFMessage(submissionData!!)
             }
+        }
+    }
+
+    private fun configBackButton() {
+        binding.btnBack.setOnClickListener {
+            navigateBackToSubmissionOverview()
         }
     }
 
