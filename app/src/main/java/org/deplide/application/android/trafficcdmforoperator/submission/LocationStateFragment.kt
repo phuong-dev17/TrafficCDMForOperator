@@ -201,9 +201,18 @@ class LocationStateFragment : BaseStateFragment() {
 
             edtLocationTypeLocationState.addTextChangedListener(
                 onTextChanged = { text, _, _, _ ->
-                    updateData(SubmissionData.FIELD_LOCATION, text!!.toString())
+                    val locationType = text.toString()
+                    val location = edtLocationLocationState.text.toString()
+                    val locationAbbreviation = locations[location]
+                    updateData(SubmissionData.FIELD_LOCATION, "tcmf:location:$locationType:$locationAbbreviation")
                 }
             )
+
+            edtLocationLocationState.setOnItemClickListener { _, _, position, _ ->
+                val locationAbbreviation = locations.values.toList()[position]
+                val locationType = edtLocationTypeLocationState.text.toString()
+                updateData(SubmissionData.FIELD_LOCATION, "tcmf:location:$locationType:$locationAbbreviation")
+            }
 
             edtReferenceObjectLocationState.addTextChangedListener(
                 onTextChanged = { text, _, _, _ ->
