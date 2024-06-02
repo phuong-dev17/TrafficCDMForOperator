@@ -58,11 +58,29 @@ class LocationStateFragment : BaseStateFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setCurrentTimeForTimeField()
         loadLocations()
+        setCurrentTimeForTimeField()
+        setDefaultForFields()
         configureListeners()
         loadInitialData()
         configureAccordingToEditMode()
+    }
+
+    private fun setDefaultForFields() {
+        binding.apply {
+            radioGroupTimeTypeLocationState.check(
+                R.id.radioBtnLocationStateActual)
+            updateData(SubmissionData.FIELD_TIME_TYPE,
+                getString(R.string.time_type_actual).replaceFirstChar { it.lowercase() })
+
+            val defaultLocationType = resources.getStringArray(R.array.predefined_location_prefix_for_location_state)[0]
+            edtLocationTypeLocationState.setText(
+                defaultLocationType,
+                false
+            )
+            updateData(SubmissionData.FIELD_LOCATION,
+                defaultLocationType)
+        }
     }
 
     private fun loadLocations() {
@@ -122,7 +140,7 @@ class LocationStateFragment : BaseStateFragment() {
             radioBtnLocationStatePlanned.isEnabled = isEnabled
             radioBtnLocationStateEstimated.isEnabled = isEnabled
             radioBtnLocationStateActual.isEnabled = isEnabled
-            edtLocationLocationState.isEnabled = isEnabled
+            edtLocationTypeLocationState.isEnabled = isEnabled
             edtReferenceObjectLocationState.isEnabled = isEnabled
         }
     }
@@ -140,14 +158,11 @@ class LocationStateFragment : BaseStateFragment() {
         binding.apply {
 
             edtTimeLocationState.addTextChangedListener(
-
                 onTextChanged = { text, _, _, _ ->
                     updateData(SubmissionData.FIELD_TIME, text!!.toString())
                 }
             )
 
-            updateData(SubmissionData.FIELD_TIME_TYPE,
-                getString(R.string.time_type_actual).replaceFirstChar { it.lowercase() })
             radioGroupTimeTypeLocationState
                 .setOnCheckedChangeListener{ _, checkedId ->
                     when (checkedId) {
@@ -178,7 +193,7 @@ class LocationStateFragment : BaseStateFragment() {
                 dateTimePicker.show()
             }
 
-            edtLocationLocationState.addTextChangedListener(
+            edtLocationTypeLocationState.addTextChangedListener(
                 onTextChanged = { text, _, _, _ ->
                     updateData(SubmissionData.FIELD_LOCATION, text!!.toString())
                 }
@@ -234,7 +249,7 @@ class LocationStateFragment : BaseStateFragment() {
                 }
                 updateData(SubmissionData.FIELD_TIME_TYPE, initialData!!.timeType!!)
 
-                edtLocationLocationState.setText(initialData!!.location)
+                edtLocationTypeLocationState.setText(initialData!!.location)
                 updateData(SubmissionData.FIELD_LOCATION, initialData!!.location!!)
 
                 edtReferenceObjectLocationState.setText(initialData!!.referenceObject)

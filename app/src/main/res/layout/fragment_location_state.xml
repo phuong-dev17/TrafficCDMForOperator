@@ -63,8 +63,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="10dp"
-        android:text="@string/location"
-        android:labelFor="@id/edtLocationLocationState"/>
+        android:text="@string/location_type"
+        android:labelFor="@id/edtLocationTypeLocationState"/>
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
@@ -72,7 +72,7 @@
         android:layout_height="wrap_content">
 
         <AutoCompleteTextView
-            android:id="@+id/edtLocationLocationState"
+            android:id="@+id/edtLocationTypeLocationState"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
