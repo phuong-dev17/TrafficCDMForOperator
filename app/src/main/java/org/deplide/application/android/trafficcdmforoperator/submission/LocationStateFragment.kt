@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.ListPopupWindow
 import androidx.core.os.BundleCompat
 import androidx.core.widget.addTextChangedListener
 import com.squareup.moshi.JsonAdapter
@@ -33,6 +34,7 @@ class LocationStateFragment : BaseStateFragment() {
     private var editMode: String? = null
     private lateinit var dateTimePicker: DateTimePicker
     private lateinit var locations: Map<String, String>
+    private val listPopupWindow by lazy { ListPopupWindow(requireContext()) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,7 +77,7 @@ class LocationStateFragment : BaseStateFragment() {
                 getString(R.string.time_type_actual).replaceFirstChar { it.lowercase() })
 
             val defaultLocationType = resources.getStringArray(R.array.predefined_location_prefix_for_location_state)[0]
-            edtLocationTypeLocationState.setText(
+            edtLocationLocationState.setText(
                 defaultLocationType,
                 false
             )
@@ -146,7 +148,6 @@ class LocationStateFragment : BaseStateFragment() {
             radioBtnLocationStatePlanned.isEnabled = isEnabled
             radioBtnLocationStateEstimated.isEnabled = isEnabled
             radioBtnLocationStateActual.isEnabled = isEnabled
-            edtLocationTypeLocationState.isEnabled = isEnabled
             edtReferenceObjectLocationState.isEnabled = isEnabled
         }
     }
@@ -199,20 +200,45 @@ class LocationStateFragment : BaseStateFragment() {
                 dateTimePicker.show()
             }
 
-            edtLocationTypeLocationState.addTextChangedListener(
+            listPopupWindow.anchorView = edtLocationLocationState
+            edtLocationLocationState.addTextChangedListener(
                 onTextChanged = { text, _, _, _ ->
-                    val locationType = text.toString()
-                    val location = edtLocationLocationState.text.toString()
-                    val locationAbbreviation = locations[location]
-                    updateData(SubmissionData.FIELD_LOCATION, "tcmf:location:$locationType:$locationAbbreviation")
+                    listPopupWindow.dismiss()
+                    
+                    val locationPrefix =
+                        "tcmf:${text.toString().split(":")[1]}:${text.toString().split(":")[2]}"
+                    val locationName = text.toString().split(":")[3]
+                        .replaceFirstChar { it.uppercase() }
+
+                    Log.d(TAG, "configureListeners: $locationPrefix:$locationName")
+                    val items = locations.keys.toList().filter {
+                        it.contains(locationName)
+                    }
+                    Log.d(TAG, "configureListeners: $items")
+                    if (items.isNotEmpty()) {
+                        val adapter = ArrayAdapter<String>(
+                            requireContext(),
+                            R.layout.cell_location,
+                            items
+                        )
+                        listPopupWindow.setAdapter(adapter)
+
+                        listPopupWindow.setOnItemClickListener { _, _, position: Int, _ ->
+                            // Respond to list popup window item click.
+                            val locationAbbreviation = locations[items[position]]
+                            val location = "$locationPrefix:$locationAbbreviation"
+
+                            edtLocationLocationState.setText(location)
+                            updateData(SubmissionData.FIELD_LOCATION, location)
+
+                            // Dismiss popup.
+                            listPopupWindow.dismiss()
+                        }
+
+                        listPopupWindow.show()
+                    }
                 }
             )
-
-            edtLocationLocationState.setOnItemClickListener { _, _, position, _ ->
-                val locationAbbreviation = locations.values.toList()[position]
-                val locationType = edtLocationTypeLocationState.text.toString()
-                updateData(SubmissionData.FIELD_LOCATION, "tcmf:location:$locationType:$locationAbbreviation")
-            }
 
             edtReferenceObjectLocationState.addTextChangedListener(
                 onTextChanged = { text, _, _, _ ->
@@ -264,7 +290,7 @@ class LocationStateFragment : BaseStateFragment() {
                 }
                 updateData(SubmissionData.FIELD_TIME_TYPE, initialData!!.timeType!!)
 
-                edtLocationTypeLocationState.setText(initialData!!.location)
+                edtLocationLocationState.setText(initialData!!.location)
                 updateData(SubmissionData.FIELD_LOCATION, initialData!!.location!!)
 
                 edtReferenceObjectLocationState.setText(initialData!!.referenceObject)
