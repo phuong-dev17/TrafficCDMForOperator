@@ -92,12 +92,6 @@ class LocationStateFragment : BaseStateFragment() {
         val loadedLocations: Map<String, String> = parseLocationJsonString(locationJsonString)
 
         locations = makeLocationFullNameAsKeyInTheMap(loadedLocations)
-
-        val adapter = ArrayAdapter<String>(
-            requireContext(),
-            R.layout.cell_location,
-            locations.keys.toList())
-        binding.edtLocationLocationState.setAdapter(adapter)
     }
 
     private fun makeLocationFullNameAsKeyInTheMap(loadedLocations: Map<String, String>) =
@@ -204,38 +198,66 @@ class LocationStateFragment : BaseStateFragment() {
             edtLocationLocationState.addTextChangedListener(
                 onTextChanged = { text, _, _, _ ->
                     listPopupWindow.dismiss()
-                    
-                    val locationPrefix =
-                        "tcmf:${text.toString().split(":")[1]}:${text.toString().split(":")[2]}"
-                    val locationName = text.toString().split(":")[3]
-                        .replaceFirstChar { it.uppercase() }
 
-                    Log.d(TAG, "configureListeners: $locationPrefix:$locationName")
-                    val items = locations.keys.toList().filter {
-                        it.contains(locationName)
-                    }
-                    Log.d(TAG, "configureListeners: $items")
-                    if (items.isNotEmpty()) {
+                    val locationArray = text.toString().split(":")
+                    Log.d(TAG, "configureListeners: $locationArray")
+                    Log.d(TAG, "configureListeners: ${locationArray.size} - ${locationArray.size < 4}")
+
+                    if (locationArray.size < 4) {
+                        Log.d(TAG, "configureListeners if: ${locationArray.size}")
+                        val locationPrefixes =
+                            resources.getStringArray(R.array.predefined_location_prefix_for_location_state)
+
                         val adapter = ArrayAdapter<String>(
                             requireContext(),
                             R.layout.cell_location,
-                            items
-                        )
+                            locationPrefixes)
                         listPopupWindow.setAdapter(adapter)
 
                         listPopupWindow.setOnItemClickListener { _, _, position: Int, _ ->
                             // Respond to list popup window item click.
-                            val locationAbbreviation = locations[items[position]]
-                            val location = "$locationPrefix:$locationAbbreviation"
+                            val locationPrefix = locationPrefixes[position]
 
-                            edtLocationLocationState.setText(location)
-                            updateData(SubmissionData.FIELD_LOCATION, location)
+                            edtLocationLocationState.setText(locationPrefix)
+                            updateData(SubmissionData.FIELD_LOCATION, locationPrefix)
 
-                            // Dismiss popup.
                             listPopupWindow.dismiss()
                         }
 
                         listPopupWindow.show()
+                    } else if ((locationArray.size == 4) and (locationArray[3].isNotEmpty())) {
+                        Log.d(TAG, "configureListeners else: ${locationArray.size}")
+                        val locationPrefix =
+                            "${locationArray[0]}:${locationArray[1]}:${locationArray[2]}"
+                        val locationName = text.toString().split(":")[3]
+                            .replaceFirstChar { it.uppercase() }
+
+                        Log.d(TAG, "configureListeners: $locationPrefix:$locationName")
+                        val items = locations.keys.toList().filter {
+                            it.contains(locationName)
+                        }
+                        if (items.isNotEmpty()) {
+                            val adapter = ArrayAdapter<String>(
+                                requireContext(),
+                                R.layout.cell_location,
+                                items
+                            )
+                            listPopupWindow.setAdapter(adapter)
+
+                            listPopupWindow.setOnItemClickListener { _, _, position: Int, _ ->
+                                // Respond to list popup window item click.
+                                val locationAbbreviation = locations[items[position]]
+                                val location = "$locationPrefix:$locationAbbreviation"
+
+                                edtLocationLocationState.setText(location)
+                                updateData(SubmissionData.FIELD_LOCATION, location)
+
+                                // Dismiss popup.
+                                listPopupWindow.dismiss()
+                            }
+
+                            listPopupWindow.show()
+                        }
                     }
                 }
             )
