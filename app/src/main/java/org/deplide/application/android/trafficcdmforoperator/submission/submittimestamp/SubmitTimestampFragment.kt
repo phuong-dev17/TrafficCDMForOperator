@@ -2,7 +2,6 @@ package org.deplide.application.android.trafficcdmforoperator.submission.submitt
 
 import android.os.Bundle
 import android.util.Log
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,7 +29,6 @@ import org.deplide.application.android.trafficcdmforoperator.submission.Administ
 import org.deplide.application.android.trafficcdmforoperator.submission.LocationStateFragment
 import org.deplide.application.android.trafficcdmforoperator.submission.StateFragmentDataUpdateListener
 import org.deplide.application.android.trafficcdmforoperator.submission.data.version_0_0_7.SubmissionData
-import org.deplide.application.android.trafficcdmforoperator.submission.submissionoverview.SubmissionOverviewFragment
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
 import org.threeten.bp.format.DateTimeFormatter

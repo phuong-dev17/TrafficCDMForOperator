@@ -2,7 +2,6 @@ package org.deplide.application.android.trafficcdmforoperator.submission.submiss
 
 import android.os.Bundle
 import android.util.Log
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,8 +15,6 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.deplide.application.android.trafficcdmforoperator.databinding.FragmentSubmissionOverviewBinding
 import org.deplide.application.android.trafficcdmforoperator.submission.OnBackPressListener
