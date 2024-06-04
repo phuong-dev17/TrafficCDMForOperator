@@ -2,9 +2,12 @@ package org.deplide.application.android.trafficcdmforoperator.submission
 
 import android.os.Bundle
 import android.text.format.DateFormat
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.ListPopupWindow
 import androidx.core.os.BundleCompat
 import androidx.core.widget.addTextChangedListener
 import org.deplide.application.android.trafficcdmforoperator.R
@@ -19,7 +22,7 @@ class AdministrativeStateFragment : BaseStateFragment() {
     private var initialData: SubmissionData? = null
     private var editMode: String? = null
     private lateinit var dateTimePicker: DateTimePicker
-
+    private val listPopupWindow by lazy { ListPopupWindow(requireContext()) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -107,6 +110,74 @@ class AdministrativeStateFragment : BaseStateFragment() {
             edtReferenceObjectAdministrativeState.addTextChangedListener(
                 onTextChanged = { text, _, _, _ ->
                     updateData(SubmissionData.FIELD_REFERENCE_OBJECT, text!!.toString())
+                }
+            )
+
+            listPopupWindow.anchorView = edtLocationAdministrativeState
+            edtLocationAdministrativeState.addTextChangedListener(
+                onTextChanged = { text, _, _, _ ->
+                    listPopupWindow.dismiss()
+
+                    val locationArray = text.toString().split(":")
+                    Log.d(TAG, "configureListeners: $locationArray")
+                    Log.d(TAG, "configureListeners: ${locationArray.size} - ${locationArray.size < 4}")
+
+                    if (locationArray.size < 4) {
+                        Log.d(TAG, "configureListeners if: ${locationArray.size}")
+                        val locationPrefixes =
+                            resources.getStringArray(R.array.predefined_location_prefix)
+
+                        val adapter = ArrayAdapter<String>(
+                            requireContext(),
+                            R.layout.cell_location,
+                            locationPrefixes)
+                        listPopupWindow.setAdapter(adapter)
+
+                        listPopupWindow.setOnItemClickListener { _, _, position: Int, _ ->
+                            // Respond to list popup window item click.
+                            val locationPrefix = locationPrefixes[position]
+
+                            edtLocationAdministrativeState.setText(locationPrefix)
+                            updateData(SubmissionData.FIELD_LOCATION, locationPrefix)
+
+                            listPopupWindow.dismiss()
+                        }
+
+                        listPopupWindow.show()
+                    } else if ((locationArray.size == 4) and (locationArray[3].isNotEmpty())) {
+                        Log.d(TAG, "configureListeners else: ${locationArray.size}")
+                        val locationPrefix =
+                            "${locationArray[0]}:${locationArray[1]}:${locationArray[2]}"
+                        val locationName = text.toString().split(":")[3]
+                            .replaceFirstChar { it.uppercase() }
+
+                        Log.d(TAG, "configureListeners: $locationPrefix:$locationName")
+                        val items = locations.keys.toList().filter {
+                            it.contains(locationName)
+                        }
+                        if (items.isNotEmpty()) {
+                            val adapter = ArrayAdapter<String>(
+                                requireContext(),
+                                R.layout.cell_location,
+                                items
+                            )
+                            listPopupWindow.setAdapter(adapter)
+
+                            listPopupWindow.setOnItemClickListener { _, _, position: Int, _ ->
+                                // Respond to list popup window item click.
+                                val locationAbbreviation = locations[items[position]]
+                                val location = "$locationPrefix:$locationAbbreviation"
+
+                                edtLocationAdministrativeState.setText(location)
+                                updateData(SubmissionData.FIELD_LOCATION, location)
+
+                                // Dismiss popup.
+                                listPopupWindow.dismiss()
+                            }
+
+                            listPopupWindow.show()
+                        }
+                    }
                 }
             )
         }
