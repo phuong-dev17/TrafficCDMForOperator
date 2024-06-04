@@ -40,12 +40,12 @@ class SubmissionDetailRecyclerViewAdapter(
 
         private fun getObjectTypeIcon(objectType: String): Int {
             return when (objectType) {
-                "Truck" -> R.drawable.local_shipping_24dp
-                "Ship" -> R.drawable.directions_boat_24dp
-                "Train" -> R.drawable.train_24dp
-                "Airplane" -> R.drawable.flight_24dp
-                "Service" -> R.drawable.support_agent_24dp
-                else -> R.drawable.broken_image_24dp
+                "Truck" -> R.drawable.object_in_concern_truck_24dp
+                "Ship" -> R.drawable.object_in_conern_ship_24dp
+                "Train" -> R.drawable.object_in_concern_train_24dp
+                "Airplane" -> R.drawable.object_in_concern_airplane_24dp
+                "Service" -> R.drawable.object_in_concern_service_24dp
+                else -> R.drawable.default_24dp
             }
         }
 
