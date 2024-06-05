@@ -31,6 +31,9 @@
         <item>estimated</item>
         <item>actual</item>
     </string-array>
+    <string-array name="predefined_attribute_prefix">
+        <item>tcmf:attribute:</item>
+    </string-array>
     <string-array name="predefined_location_prefix">
         <item>tcmf:location:station:</item>
         <item>tcmf:location:depot:</item>
