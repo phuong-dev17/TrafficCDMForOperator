@@ -353,6 +353,10 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
                     Log.d(TAG, "${entry.key}: ${entry.value}")
                     submissionData?.carrier = entry.value
                 }
+                SubmissionData.FIELD_ATTRIBUTE -> {
+                    Log.d(TAG, "${entry.key}: ${entry.value}")
+                    submissionData?.attribute = entry.value
+                }
             }
         }
     }
