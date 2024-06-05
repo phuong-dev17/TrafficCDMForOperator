@@ -31,6 +31,9 @@
         <item>estimated</item>
         <item>actual</item>
     </string-array>
+    <string-array name="predefined_attribute_prefix">
+        <item>tcmf:attribute:</item>
+    </string-array>
     <string-array name="predefined_location_prefix">
         <item>tcmf:location:station:</item>
         <item>tcmf:location:depot:</item>
@@ -57,22 +60,32 @@
         <item>"tcmf:reference_object:cargo_carrier:</item>
     </string-array>
     <string-array name="predefined_service_prefix">
-        <item>tcmf:service:information</item>
-        <item>tcmf:service:catering</item>
-        <item>tcmf:service:function_test</item>
-        <item>tcmf:service:clearance</item>
-        <item>tcmf:service:rescheduling</item>
-        <item>tcmf:service:journey</item>
-        <item>tcmf:service:maintenance</item>
-        <item>tcmf:service:decoupling</item>
-        <item>tcmf:service:arrival_inspection</item>
-        <item>tcmf:service:marshalling</item>
-        <item>tcmf:service:coupling</item>
-        <item>tcmf:service:braking_test</item>
-        <item>tcmf:service:number</item>
-        <item>tcmf:service:marshalling_plan</item>
-        <item>tcmf:service:in_group_track</item>
-        <item>tcmf:service:route</item>
-        <item>tcmf:service:signal</item>
+        <item>tcmf:service:information:</item>
+        <item>tcmf:service:catering:</item>
+        <item>tcmf:service:function_test:</item>
+        <item>tcmf:service:clearance:</item>
+        <item>tcmf:service:rescheduling:</item>
+        <item>tcmf:service:journey:</item>
+        <item>tcmf:service:maintenance:</item>
+        <item>tcmf:service:decoupling:</item>
+        <item>tcmf:service:arrival_inspection:</item>
+        <item>tcmf:service:marshalling:</item>
+        <item>tcmf:service:coupling:</item>
+        <item>tcmf:service:braking_test:</item>
+        <item>tcmf:service:number:</item>
+        <item>tcmf:service:marshalling_plan:</item>
+        <item>tcmf:service:in_group_track:</item>
+        <item>tcmf:service:route:</item>
+        <item>tcmf:service:signal:</item>
+    </string-array>
+    <string-array name="predefined_carrier_prefix">
+        <item>"tcmf:carrier:ship:</item>
+        <item>"tcmf:carrier:truck:</item>
+        <item>"tcmf:carrier:train:</item>
+        <item>"tcmf:carrier:wagon:</item>
+        <item>"tcmf:carrier:shipment:</item>
+        <item>"tcmf:carrier:airplane:</item>
+        <item>"tcmf:carrier:trailer:</item>
+        <item>"tcmf:carrier:cargo_carrier:</item>
     </string-array>
 </resources>
