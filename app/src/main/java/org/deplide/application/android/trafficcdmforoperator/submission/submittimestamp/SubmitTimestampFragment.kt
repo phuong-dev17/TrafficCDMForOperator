@@ -27,7 +27,6 @@ import org.deplide.application.android.trafficcdmforoperator.databinding.Fragmen
 import org.deplide.application.android.trafficcdmforoperator.hideKeyboard
 import org.deplide.application.android.trafficcdmforoperator.submission.AdministrativeStateFragment
 import org.deplide.application.android.trafficcdmforoperator.submission.AttributeStateFragment
-import org.deplide.application.android.trafficcdmforoperator.submission.CarrierStateFragment
 import org.deplide.application.android.trafficcdmforoperator.submission.LocationStateFragment
 import org.deplide.application.android.trafficcdmforoperator.submission.ServiceStateFragment
 import org.deplide.application.android.trafficcdmforoperator.submission.StateFragmentDataUpdateListener
@@ -286,6 +285,7 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
                 childFragmentManager.beginTransaction().replace(R.id.navHost,
                     fragment).commit()
             }
+            /*
             "CarrierState" -> {
                 Log.d(TAG, "CarrierState")
                 val fragment = CarrierStateFragment()
@@ -293,7 +293,7 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
                 fragment.arguments = bundle
                 childFragmentManager.beginTransaction().replace(R.id.navHost,
                     fragment).commit()
-            }
+            }*/
             "AttributeState" -> {
                 Log.d(TAG, "AttributeState")
                 val fragment = AttributeStateFragment()

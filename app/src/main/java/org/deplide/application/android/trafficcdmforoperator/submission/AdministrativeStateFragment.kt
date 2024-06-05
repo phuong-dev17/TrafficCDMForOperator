@@ -114,69 +114,24 @@ class AdministrativeStateFragment : BaseStateFragment() {
             )
 
             listPopupWindow.anchorView = edtLocationAdministrativeState
+            edtLocationAdministrativeState.setOnFocusChangeListener { _, hasFocus ->
+                listPopupWindow.dismiss()
+                if (hasFocus) {
+                    loadLocationTypesToListPopupWindow()
+                }
+            }
             edtLocationAdministrativeState.addTextChangedListener(
                 onTextChanged = { text, _, _, _ ->
                     listPopupWindow.dismiss()
 
                     val locationArray = text.toString().split(":")
-                    Log.d(TAG, "configureListeners: $locationArray")
-                    Log.d(TAG, "configureListeners: ${locationArray.size} - ${locationArray.size < 4}")
 
                     if (locationArray.size < 4) {
-                        Log.d(TAG, "configureListeners if: ${locationArray.size}")
-                        val locationPrefixes =
-                            resources.getStringArray(R.array.predefined_location_prefix)
-
-                        val adapter = ArrayAdapter<String>(
-                            requireContext(),
-                            R.layout.cell_location,
-                            locationPrefixes)
-                        listPopupWindow.setAdapter(adapter)
-
-                        listPopupWindow.setOnItemClickListener { _, _, position: Int, _ ->
-                            // Respond to list popup window item click.
-                            val locationPrefix = locationPrefixes[position]
-
-                            edtLocationAdministrativeState.setText(locationPrefix)
-                            updateData(SubmissionData.FIELD_LOCATION, locationPrefix)
-
-                            listPopupWindow.dismiss()
-                        }
-
-                        listPopupWindow.show()
-                    } else if ((locationArray.size == 4) and (locationArray[3].isNotEmpty())) {
-                        Log.d(TAG, "configureListeners else: ${locationArray.size}")
-                        val locationPrefix =
-                            "${locationArray[0]}:${locationArray[1]}:${locationArray[2]}"
-                        val locationName = text.toString().split(":")[3]
-                            .replaceFirstChar { it.uppercase() }
-
-                        Log.d(TAG, "configureListeners: $locationPrefix:$locationName")
-                        val items = locations.keys.toList().filter {
-                            it.contains(locationName)
-                        }
-                        if (items.isNotEmpty()) {
-                            val adapter = ArrayAdapter<String>(
-                                requireContext(),
-                                R.layout.cell_location,
-                                items
-                            )
-                            listPopupWindow.setAdapter(adapter)
-
-                            listPopupWindow.setOnItemClickListener { _, _, position: Int, _ ->
-                                // Respond to list popup window item click.
-                                val locationAbbreviation = locations[items[position]]
-                                val location = "$locationPrefix:$locationAbbreviation"
-
-                                edtLocationAdministrativeState.setText(location)
-                                updateData(SubmissionData.FIELD_LOCATION, location)
-
-                                // Dismiss popup.
-                                listPopupWindow.dismiss()
-                            }
-
-                            listPopupWindow.show()
-                        }
+                        loadLocationTypesToListPopupWindow()
+                    } else if (locationArray.size == 4) {
+                        loadLocationsToListPopupWindow(
+                            "${locationArray[0]}:${locationArray[1]}:${locationArray[2]}",
+                            locationArray[3].replaceFirstChar { it.uppercase() })
                     }
                 }
             )
@@ -220,6 +175,61 @@ class AdministrativeStateFragment : BaseStateFragment() {
                 }
             }
         }
+    }
+
+    private fun loadLocationsToListPopupWindow(
+        locationPrefix: String,
+        locationName: String
+    ) {
+        val items = locations.keys.toList().filter {
+            it.contains(locationName)
+        }
+        if (items.isNotEmpty()) {
+            val adapter = ArrayAdapter<String>(
+                requireContext(),
+                R.layout.cell_location,
+                items
+            )
+            listPopupWindow.setAdapter(adapter)
+
+            listPopupWindow.setOnItemClickListener { _, _, position: Int, _ ->
+                // Respond to list popup window item click.
+                val locationAbbreviation = locations[items[position]]
+                val location = "$locationPrefix:$locationAbbreviation"
+
+                binding.edtLocationAdministrativeState.setText(location)
+                updateData(SubmissionData.FIELD_LOCATION, location)
+
+                // Dismiss popup.
+                listPopupWindow.dismiss()
+            }
+
+            listPopupWindow.show()
+        }
+    }
+
+    private fun loadLocationTypesToListPopupWindow() {
+        val locationPrefixes =
+            resources.getStringArray(R.array.predefined_location_prefix_for_location_state)
+
+        val adapter = ArrayAdapter<String>(
+            requireContext(),
+            R.layout.cell_location,
+            locationPrefixes
+        )
+        listPopupWindow.setAdapter(adapter)
+
+        listPopupWindow.setOnItemClickListener { _, _, position: Int, _ ->
+            // Respond to list popup window item click.
+            val locationPrefix = locationPrefixes[position]
+
+            binding.edtLocationAdministrativeState.setText(locationPrefix)
+            updateData(SubmissionData.FIELD_LOCATION, locationPrefix)
+
+            listPopupWindow.dismiss()
+        }
+
+        listPopupWindow.show()
     }
 
     companion object {
