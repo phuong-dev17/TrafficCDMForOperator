@@ -101,7 +101,7 @@ data class SubmissionData(
         var isValid = true
 
         //mandatory fields
-        if (time == null || timeType == null || attribute != null
+        if (time == null || timeType == null || attribute == null
             || referenceObject == null || timeSequence == null) {
             isValid = false
         }
@@ -208,15 +208,16 @@ data class SubmissionData(
             ""
         }
 
-        val attributeName = attribute?.split(":")!![2]
-        val attributeValue = attribute?.split(":")!![3]
         val timeSequenceString = timeSequence?.replace("_", " ")
         val localTime = convertUTCTimeToSystemDefault(time!!, dateTimeFormat)
 
         val attributeState = if (timeSequence == "set") {
-            "$timeTypeString to $timeSequenceString $attributeName to $attributeValue $objectString on $localTime $locationString"
+            val attributeName = attribute?.split(":")!![2]
+            val attributeValue = attribute?.split(":")!![3]
+            "$timeTypeString to $timeSequenceString $attributeName $attributeValue $objectString on $localTime $locationString"
         } else {
-            "$timeTypeString to $timeSequence $attributeName for $objectString on $localTime at $locationString"
+            val attributeName = attribute?.split(":")!![2]
+            "$timeTypeString to $timeSequence $attributeName $objectString on $localTime $locationString"
         }
 
         return attributeState
@@ -265,5 +266,6 @@ data class SubmissionData(
         const val FIELD_TIME_SEQUENCE = "Time Sequence"
         const val FIELD_SERVICE = "Service"
         const val FIELD_CARRIER = "Carrier"
+        const val FIELD_ATTRIBUTE = "Attribute"
     }
 }
