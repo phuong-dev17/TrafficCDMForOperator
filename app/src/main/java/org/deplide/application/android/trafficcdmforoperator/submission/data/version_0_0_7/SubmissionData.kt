@@ -38,6 +38,8 @@ data class SubmissionData(
             "MessageOperation" -> isMessageOperationPayloadValid()
             "AdministrativeState" -> isAdministrativeStatePayloadValid()
             "AttributeState" -> isAttributeStatePayloadValid()
+            "ServiceState" -> isServiceStatePayloadValid()
+            "CarrierState" -> isCarrierStatePayloadValid()
             else -> false //unknown type
         }
     }
@@ -96,6 +98,44 @@ data class SubmissionData(
 
         return isValid
     }
+    private fun isServiceStatePayloadValid(): Boolean {
+        var isValid = true
+
+        //mandatory fields
+        if (time == null || timeType == null || timeSequence == null
+            || referenceObject == null || service == null) {
+            isValid = false
+        }
+
+        //optional fields: location
+
+        //prohibited fields
+        if ( carrier != null
+            || attribute != null || operation != null) {
+            isValid = false
+        }
+
+        return isValid
+    }
+    private fun isCarrierStatePayloadValid(): Boolean {
+        var isValid = true
+
+        //mandatory fields
+        if (timeType != null || time == null || carrier == null ||
+            timeSequence == null || referenceObject == null) {
+            isValid = false
+        }
+
+        //optional fields: location
+
+        //prohibited fields
+        if (service != null
+            || attribute != null || operation != null) {
+            isValid = false
+        }
+
+        return isValid
+    }
 
     private fun isAttributeStatePayloadValid(): Boolean {
         var isValid = true
@@ -131,7 +171,9 @@ data class SubmissionData(
         return when(type) {
             "LocationState" -> getDescriptionForLocationState(dateTimeFormat)
             "AdministrativeState" -> getDescriptionForAdministrativeState(dateTimeFormat)
-            "AttributeState" -> getDescriptionForAttributeState(dateTimeFormat)                      // <------- Attribute
+            "AttributeState" -> getDescriptionForAttributeState(dateTimeFormat)
+            "ServiceState" -> getDescriptionForServiceState(dateTimeFormat)
+            "CarrierState" -> getDescriptionForCarrierState(dateTimeFormat)
             else -> "" //unknown type
         }
     }
@@ -176,10 +218,79 @@ data class SubmissionData(
             ""
         }
 
+
         return "$timeSequenceString at $localTime $objectString $locationString"
     }
 
-    private fun getDescriptionForAttributeState(dateTimeFormat: String): String {                    // <------- Attribute
+    private fun getDescriptionForServiceState(dateTimeFormat: String): String {
+        val timeTypeString = if (timeType != null) {
+            if (timeType == "actual") {
+                "has"
+            } else {
+                "$timeType to"
+            }
+        } else {
+            ""
+        }
+        val timeSequenceString = timeSequence?.replace("_", " ")
+        val localTime = convertUTCTimeToSystemDefault(time!!, dateTimeFormat)
+        val locationString = if (location != null) {
+            val locationType = location?.split(":")!![2]
+            val locationId = location?.split("${locationType}:")!![1]
+
+            "at $locationType $locationId"
+        } else {
+            ""
+        }
+
+        val objectString = if (referenceObject != null) {
+            val objectType = referenceObject?.split(":")!![2]
+            val objectId = referenceObject?.split("${objectType}:")!![1]
+
+            "for $objectType $objectId"
+        } else {
+            ""
+        }
+
+        return "$timeTypeString $timeSequenceString at $localTime $objectString $locationString"
+    }
+
+    private fun getDescriptionForCarrierState(dateTimeFormat: String): String {
+        val timeTypeString = if (timeType != null) {
+            if (timeType == "actual") {
+                "has"
+            } else {
+                "$timeType to"
+            }
+        } else {
+            ""
+        }
+        val timeSequenceString = timeSequence?.replace("_", " ")
+        val localTime = convertUTCTimeToSystemDefault(time!!, dateTimeFormat)
+
+
+        val locationString = if (location != null) {
+            val locationType = location?.split(":")!![2]
+            val locationId = location?.split("${locationType}:")!![1]
+
+            "at $locationType $locationId"
+        } else {
+            ""
+        }
+
+        val objectString = if (referenceObject != null) {
+            val objectType = referenceObject?.split(":")!![2]
+            val objectId = referenceObject?.split("${objectType}:")!![1]
+
+            "for $objectType $objectId"
+        } else {
+            ""
+        }
+
+        return "$timeTypeString $timeSequenceString at $localTime $objectString $locationString"
+    }
+
+    private fun getDescriptionForAttributeState(dateTimeFormat: String): String {
         val timeTypeString = if (timeType != null) {
             if (timeType == "actual") {
                 "has"
@@ -227,7 +338,9 @@ data class SubmissionData(
         return when(type) {
             "LocationState" -> getObjectInConcernForLocationState()
             "AdministrativeState" -> getObjectInConcernForAdministrativeState()
-            "AttributeState" -> getObjectInConcernForAttributeState()                                // <------- Attribute
+            "ServiceState" -> getObjectInConcernForServiceState()
+            "CarrierState" -> getObjectInConcernForCarrierState()
+            "AttributeState" -> getObjectInConcernForAttributeState()
             else -> "" //unknown type
         }
     }
@@ -245,8 +358,17 @@ data class SubmissionData(
 
         return "Service $service"
     }
+    private fun getObjectInConcernForServiceState(): String {
+        val service = service?.split(":")!![2]
 
-    private fun getObjectInConcernForAttributeState(): String {                                      // <------- Attribute
+        return "Service $service"
+    }
+    private fun getObjectInConcernForCarrierState(): String {
+        val carrier = carrier?.split(":")!![2]
+
+        return "Carrier $carrier"
+    }
+    private fun getObjectInConcernForAttributeState(): String {
         val objectType = referenceObject?.split(":")!![2]
         val objectTypeUppercase = objectType.replaceFirstChar { it.uppercase() }
         val objectId = referenceObject?.split("${objectType}:")!![1]

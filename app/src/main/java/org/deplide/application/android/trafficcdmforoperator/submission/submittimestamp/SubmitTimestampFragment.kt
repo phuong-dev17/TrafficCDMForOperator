@@ -28,7 +28,9 @@ import org.deplide.application.android.trafficcdmforoperator.databinding.Fragmen
 import org.deplide.application.android.trafficcdmforoperator.hideKeyboard
 import org.deplide.application.android.trafficcdmforoperator.submission.AdministrativeStateFragment
 import org.deplide.application.android.trafficcdmforoperator.submission.AttributeStateFragment
+import org.deplide.application.android.trafficcdmforoperator.submission.CarrierStateFragment
 import org.deplide.application.android.trafficcdmforoperator.submission.LocationStateFragment
+import org.deplide.application.android.trafficcdmforoperator.submission.ServiceStateFragment
 import org.deplide.application.android.trafficcdmforoperator.submission.StateFragmentDataUpdateListener
 import org.deplide.application.android.trafficcdmforoperator.submission.data.version_0_0_7.SubmissionData
 import org.deplide.application.android.trafficcdmforoperator.submission.submissionoverview.SubmissionOverviewFragment
@@ -273,6 +275,22 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
             "AdministrativeState" -> {
                 Log.d(TAG, "AdministrativeState")
                 val fragment = AdministrativeStateFragment()
+                fragment.addStateFragmentDataUpdateListener(this)
+                fragment.arguments = bundle
+                childFragmentManager.beginTransaction().replace(R.id.navHost,
+                    fragment).commit()
+            }
+            "ServiceState" -> {
+                Log.d(TAG, "ServiceState")
+                val fragment = ServiceStateFragment()
+                fragment.addStateFragmentDataUpdateListener(this)
+                fragment.arguments = bundle
+                childFragmentManager.beginTransaction().replace(R.id.navHost,
+                    fragment).commit()
+            }
+            "CarrierState" -> {
+                Log.d(TAG, "CarrierState")
+                val fragment = CarrierStateFragment()
                 fragment.addStateFragmentDataUpdateListener(this)
                 fragment.arguments = bundle
                 childFragmentManager.beginTransaction().replace(R.id.navHost,
