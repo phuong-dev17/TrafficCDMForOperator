@@ -110,6 +110,12 @@ class AttributeStateFragment : BaseStateFragment() {
                     }
                 }
 
+            edtAttributeAttributeState.addTextChangedListener(
+                onTextChanged = { text, _, _, _ ->
+                    updateData(SubmissionData.FIELD_ATTRIBUTE, text!!.toString())
+                }
+            )
+
             txtInputLayoutTimeAttributeState.setEndIconOnClickListener {
                 dateTimePicker = DateTimePicker(
                     getString(R.string.date_time_pattern),
@@ -179,8 +185,13 @@ class AttributeStateFragment : BaseStateFragment() {
                 }
                 updateData(SubmissionData.FIELD_TIME_TYPE, initialData!!.timeType!!)
 
-                edtLocationAttributeState.setText(initialData!!.location)
-                updateData(SubmissionData.FIELD_LOCATION, initialData!!.location!!)
+                edtAttributeAttributeState.setText(initialData!!.attribute)
+                updateData(SubmissionData.FIELD_ATTRIBUTE, initialData!!.attribute!!)
+
+                initialData!!.location?.run {
+                    edtLocationAttributeState.setText(initialData!!.location)
+                    updateData(SubmissionData.FIELD_LOCATION, initialData!!.location!!)
+                }
 
                 edtReferenceObjectAttributeState.setText(initialData!!.referenceObject)
                 updateData(SubmissionData.FIELD_REFERENCE_OBJECT, initialData!!.referenceObject!!)
