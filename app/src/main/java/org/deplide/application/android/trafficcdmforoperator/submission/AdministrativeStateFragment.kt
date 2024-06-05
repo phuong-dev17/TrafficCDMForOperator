@@ -210,7 +210,7 @@ class AdministrativeStateFragment : BaseStateFragment() {
 
     private fun loadLocationTypesToListPopupWindow() {
         val locationPrefixes =
-            resources.getStringArray(R.array.predefined_location_prefix_for_location_state)
+            resources.getStringArray(R.array.predefined_location_prefix)
 
         val adapter = ArrayAdapter<String>(
             requireContext(),
