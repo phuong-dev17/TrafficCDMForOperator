@@ -37,6 +37,7 @@ data class SubmissionData(
             "LocationState" -> isLocationStatePayloadValid()
             "MessageOperation" -> isMessageOperationPayloadValid()
             "AdministrativeState" -> isAdministrativeStatePayloadValid()
+            "AttributeState" -> isAttributeStatePayloadValid()
             else -> false //unknown type
         }
     }
@@ -96,6 +97,25 @@ data class SubmissionData(
         return isValid
     }
 
+    private fun isAttributeStatePayloadValid(): Boolean {
+        var isValid = true
+
+        //mandatory fields
+        if (time == null || timeType == null || attribute != null
+            || referenceObject == null || timeSequence == null) {
+            isValid = false
+        }
+
+        //optional fields: location
+
+        //prohibited fields
+        if (service != null || carrier != null || operation != null) {
+            isValid = false
+        }
+
+        return isValid
+    }
+
     private fun isMessageOperationPayloadValid(): Boolean {
         var isValid = true
 
@@ -111,6 +131,7 @@ data class SubmissionData(
         return when(type) {
             "LocationState" -> getDescriptionForLocationState(dateTimeFormat)
             "AdministrativeState" -> getDescriptionForAdministrativeState(dateTimeFormat)
+            "AttributeState" -> getDescriptionForAttributeState(dateTimeFormat)                      // <------- Attribute
             else -> "" //unknown type
         }
     }
@@ -158,10 +179,54 @@ data class SubmissionData(
         return "$timeSequenceString at $localTime $objectString $locationString"
     }
 
+    private fun getDescriptionForAttributeState(dateTimeFormat: String): String {                    // <------- Attribute
+        val timeTypeString = if (timeType != null) {
+            if (timeType == "actual") {
+                "has"
+            } else {
+                "$timeType to"
+            }
+        } else {
+            ""
+        }
+
+        val objectString = if (referenceObject != null) {
+            val objectType = referenceObject?.split(":")!![2]
+            val objectId = referenceObject?.split("${objectType}:")!![1]
+
+            "for $objectType $objectId"
+        } else {
+            ""
+        }
+
+        val locationString = if (location != null) {
+            val locationType = location?.split(":")!![2]
+            val locationId = location?.split("${locationType}:")!![1]
+
+            "at $locationType $locationId"
+        } else {
+            ""
+        }
+
+        val attributeName = attribute?.split(":")!![2]
+        val attributeValue = attribute?.split(":")!![3]
+        val timeSequenceString = timeSequence?.replace("_", " ")
+        val localTime = convertUTCTimeToSystemDefault(time!!, dateTimeFormat)
+
+        val attributeState = if (timeSequence == "set") {
+            "$timeTypeString to $timeSequenceString $attributeName to $attributeValue $objectString on $localTime $locationString"
+        } else {
+            "$timeTypeString to $timeSequence $attributeName for $objectString on $localTime at $locationString"
+        }
+
+        return attributeState
+    }
+
     fun getObjectInConcern(): String {
         return when(type) {
             "LocationState" -> getObjectInConcernForLocationState()
             "AdministrativeState" -> getObjectInConcernForAdministrativeState()
+            "AttributeState" -> getObjectInConcernForAttributeState()                                // <------- Attribute
             else -> "" //unknown type
         }
     }
@@ -178,6 +243,16 @@ data class SubmissionData(
         val service = service?.split(":")!![2]
 
         return "Service $service"
+    }
+
+    private fun getObjectInConcernForAttributeState(): String {                                      // <------- Attribute
+        val objectType = referenceObject?.split(":")!![2]
+        val objectTypeUppercase = objectType.replaceFirstChar { it.uppercase() }
+        val objectId = referenceObject?.split("${objectType}:")!![1]
+        val attributeName = attribute?.split(":")!![2]
+        val attributeValue = attribute?.split(":")!![3]
+
+        return "$objectTypeUppercase $objectId $attributeName $attributeValue"
     }
 
     companion object {
