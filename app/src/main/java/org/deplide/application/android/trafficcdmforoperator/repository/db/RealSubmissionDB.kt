@@ -6,7 +6,6 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import org.deplide.application.android.trafficcdmforoperator.repository.SubmissionDBInterface
-import org.deplide.application.android.trafficcdmforoperator.repository.fakedb.FakeSubmissionDB
 import org.deplide.application.android.trafficcdmforoperator.submission.data.version_0_0_7.SubmissionData
 
 @Database(entities = [SubmissionEntity::class], version = 1)

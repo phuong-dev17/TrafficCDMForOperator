@@ -3,7 +3,6 @@ package org.deplide.application.android.trafficcdmforoperator.repository.db
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import androidx.room.TypeConverters
 
 @Dao
 interface SubmissionDao {
