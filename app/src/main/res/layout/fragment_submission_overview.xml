@@ -42,17 +42,6 @@
                 android:text="@string/time_sequence"/>
 
             <com.google.android.material.chip.Chip
-                android:id="@+id/chipObjectInConcern"
-                style="@style/Widget.Material3.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:chipIconVisible="false"
-                app:checkedIconVisible="false"
-                app:closeIconVisible="true"
-                app:closeIcon="@drawable/baseline_arrow_drop_down_24"
-                android:text="@string/object_in_concern"/>
-
-            <com.google.android.material.chip.Chip
                 android:id="@+id/chipGrouping"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"

@@ -3,14 +3,12 @@ package org.deplide.application.android.trafficcdmforoperator.submission
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.BundleCompat
 import androidx.core.widget.addTextChangedListener
 import org.deplide.application.android.trafficcdmforoperator.R
-import org.deplide.application.android.trafficcdmforoperator.databinding.FragmentAdministrativeStateBinding
 import org.deplide.application.android.trafficcdmforoperator.databinding.FragmentServiceStateBinding
 import org.deplide.application.android.trafficcdmforoperator.submission.data.version_0_0_7.SubmissionData
 import org.deplide.application.android.trafficcdmforoperator.submission.submittimestamp.SubmitTimestampFragment
