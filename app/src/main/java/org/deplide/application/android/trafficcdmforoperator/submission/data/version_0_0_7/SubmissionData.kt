@@ -3,6 +3,7 @@ package org.deplide.application.android.trafficcdmforoperator.submission.data.ve
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import org.deplide.application.android.trafficcdmforoperator.network.dto.tcmf.version_0_0_7.TCMFMessage
+import org.deplide.application.android.trafficcdmforoperator.repository.db.SubmissionEntity
 import org.deplide.application.android.trafficcdmforoperator.submission.util.DateTimeHelper.Companion.convertUTCTimeToSystemDefault
 
 @Parcelize
@@ -32,6 +33,23 @@ data class SubmissionData(
     var operation: String? = null,
     var undoMessageId: String? = null
 ) : Parcelable {
+    constructor(submissionEntity: SubmissionEntity): this(
+        messageId = submissionEntity.messageId,
+        reportedAt = submissionEntity.reportedAt,
+        reportedBy = submissionEntity.reportedBy,
+        source = submissionEntity.source,
+        grouping = submissionEntity.grouping.toMutableList(),
+        type = submissionEntity.type,
+        time = submissionEntity.time,
+        timeSequence = submissionEntity.timeSequence,
+        referenceObject = submissionEntity.referenceObject,
+        timeType = submissionEntity.timeType,
+        location = submissionEntity.location,
+        service = submissionEntity.service,
+        carrier = submissionEntity.carrier,
+        attribute = submissionEntity.attribute
+    )
+
     fun isPayloadValid(): Boolean {
         return when(type) {
             "LocationState" -> isLocationStatePayloadValid()
@@ -217,7 +235,6 @@ data class SubmissionData(
         } else {
             ""
         }
-
 
         return "$timeSequenceString at $localTime $objectString $locationString"
     }

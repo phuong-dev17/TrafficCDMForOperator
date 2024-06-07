@@ -40,7 +40,8 @@ import java.util.Calendar
 
 class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
     private lateinit var binding: FragmentSubmitTimestampBinding
-    private val viewModel: SubmitTimestampViewModel by viewModels { SubmitTimestampViewModel.factory() }
+    private val viewModel: SubmitTimestampViewModel by viewModels {
+        SubmitTimestampViewModel.factory(requireContext()) }
     private var submissionData: SubmissionData? = null
     private val _authInfoProvider: AuthInfoProvider by lazy {
         (requireActivity().application as TrafficCDMForOperatorApplication).authInfoProvider
@@ -63,6 +64,7 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
         }
 
         if (messageId != null) {
+            Log.d(TAG, "onCreate: loadMessage: messageId: $messageId")
             viewModel.loadMessage(messageId!!)
         }
     }
@@ -207,6 +209,7 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
     private fun configProceedButton() {
         binding.btnProceed.setOnClickListener {
             if (editMode == EDIT_MODE_UNDO_MESSAGE || editMode == EDIT_MODE_MODIFY_MESSAGE) {
+                Log.d(TAG, "undoMessage: $messageId")
                 submitUndoMessage(messageId!!)
             } else {
                 submitTCMFMessage(submissionData!!)

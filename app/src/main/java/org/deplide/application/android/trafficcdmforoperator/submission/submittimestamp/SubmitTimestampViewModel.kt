@@ -1,5 +1,6 @@
 package org.deplide.application.android.trafficcdmforoperator.submission.submittimestamp
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -16,18 +17,18 @@ import org.apache.commons.codec.binary.Base64
 import org.deplide.application.android.trafficcdmforoperator.network.IdToken
 import org.deplide.application.android.trafficcdmforoperator.network.TrafficCDMApi
 import org.deplide.application.android.trafficcdmforoperator.network.dto.tcmf.version_0_0_7.TCMFMessage
-import org.deplide.application.android.trafficcdmforoperator.repository.SubmittedMessageDBFactory
-import org.deplide.application.android.trafficcdmforoperator.repository.SubmittedMessageDBInterface
+import org.deplide.application.android.trafficcdmforoperator.repository.SubmissionDBFactory
+import org.deplide.application.android.trafficcdmforoperator.repository.SubmissionDBInterface
 import org.deplide.application.android.trafficcdmforoperator.submission.data.version_0_0_7.SubmissionData
 import org.deplide.application.android.trafficcdmforoperator.submission.util.DateTimeHelper.Companion.getCurrentDateTime
 import java.util.UUID
 
-class SubmitTimestampViewModel: ViewModel() {
+class SubmitTimestampViewModel(applicationContext: Context): ViewModel() {
     private var _uiState = MutableStateFlow<SubmitTmestampUIState>(SubmitTmestampUIState.Idle(null))
     val uiState: StateFlow<SubmitTmestampUIState> = _uiState
 
-    private val submittedMessageDB: SubmittedMessageDBInterface by lazy {
-        SubmittedMessageDBFactory.getSubmittedMessageDB(SubmittedMessageDBFactory.FAKE_DB)!!
+    private val submissionDB: SubmissionDBInterface by lazy {
+        SubmissionDBFactory.getSubmissionDB(SubmissionDBFactory.REAL_DB, applicationContext)!!
     }
 
     fun submitTCMFMessage(
@@ -50,12 +51,11 @@ class SubmitTimestampViewModel: ViewModel() {
                             message = TCMFMessage(submissionData)
                         )
 
-
-                        submittedMessageDB.addMessage(submissionData)
+                        submissionDB.addSubmission(submissionData)
 
                         _uiState.value = SubmitTmestampUIState.Success
                     } catch (ex: Exception) {
-                        _uiState.value = SubmitTmestampUIState.Error("Failed to submit TCMF Message ${ex.message}")
+                        _uiState.value = SubmitTmestampUIState.Error("Failed to submit TCMF Message $ex")
                     }
                 } else {
                     _uiState.value = SubmitTmestampUIState.Error("Invalid TCMF Message")
@@ -73,6 +73,10 @@ class SubmitTimestampViewModel: ViewModel() {
             ?.substring(startIndex = SubmissionData.LOCATION_PREFIX.length))?.run {
                 submissionData?.grouping?.add("tcmf:grouping:$this")
             }*/
+        //In case submission failure, the user still can click submit again.
+        //Therefore, we must clear the grouping info before filling the new one
+        //Otherwise, new grouping will be appended to the end of the old one.
+        submissionData.grouping.clear()
 
         if (!submissionData.referenceObject.isNullOrEmpty()) {
             (submissionData.referenceObject
@@ -112,7 +116,7 @@ class SubmitTimestampViewModel: ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.value = SubmitTmestampUIState.Processing
 
-            submittedMessageDB.getMessage(messageId)?.let {
+            submissionDB.getSubmissionByMessageId(messageId)?.let {
                 _uiState.value = SubmitTmestampUIState.Idle(it)
             }?: run {
                 _uiState.value = SubmitTmestampUIState.Idle(null)
@@ -124,7 +128,8 @@ class SubmitTimestampViewModel: ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.value = SubmitTmestampUIState.Processing
 
-            submittedMessageDB.getMessage(messageId)?.let {
+            Log.d(TAG, "undoMessage: getSubmissionByMessageId $messageId")
+            submissionDB.getSubmissionByMessageId(messageId)?.let {
                 val messageOperation = SubmissionData(
                     type = "MessageOperation",
                     operation = "invalidate",
@@ -139,15 +144,12 @@ class SubmitTimestampViewModel: ViewModel() {
 
                     if (messageOperation.isMessageValid()) {
                         try {
+                            Log.d(TAG, "Submitting TCMF OperationMessage")
                             TrafficCDMApi.retrofit.submitMessage(
                                 token = "Bearer $accessToken",
                                 accept = "application/json",
                                 message = TCMFMessage(messageOperation)
                             )
-
-                            submittedMessageDB.deleteMessage(messageId)
-
-                            _uiState.value = SubmitTmestampUIState.SuccessUndo
                         } catch (ex: Exception) {
                             _uiState.value = SubmitTmestampUIState.Error("Failed to undo message $messageId")
                         }
@@ -156,15 +158,25 @@ class SubmitTimestampViewModel: ViewModel() {
             }?: run {
                 _uiState.value = SubmitTmestampUIState.Error("Failed to undo message $messageId")
             }
+
+            try {
+                Log.d(TAG, "Remove Submission for $messageId from DB")
+                submissionDB.deleteSubmissionByMessageId(messageId)
+                Log.d(TAG, "Finished removing submission for $messageId from DB")
+
+                _uiState.value = SubmitTmestampUIState.SuccessUndo
+            } catch (ex: Exception) {
+                _uiState.value = SubmitTmestampUIState.Error("Failed to undo message $messageId")
+            }
         }
     }
 
     companion object {
         const val TAG = "SubmitTimestampViewModel"
-        fun factory(): ViewModelProvider.Factory {
+        fun factory(applicationContext: Context): ViewModelProvider.Factory {
             return viewModelFactory {
                 initializer {
-                    SubmitTimestampViewModel()
+                    SubmitTimestampViewModel(applicationContext)
                 }
             }
         }

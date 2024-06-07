@@ -25,7 +25,9 @@ import org.deplide.application.android.trafficcdmforoperator.submission.submitti
 class SubmissionOverviewFragment : Fragment() {
     private lateinit var binding: FragmentSubmissionOverviewBinding
     private lateinit var navController: NavController
-    private val viewModel: SubmissionOverviewViewModel by viewModels()
+    private val viewModel: SubmissionOverviewViewModel by viewModels{
+        SubmissionOverviewViewModel.factory(requireContext())
+    }
     private var backPressListener: OnBackPressListener? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
