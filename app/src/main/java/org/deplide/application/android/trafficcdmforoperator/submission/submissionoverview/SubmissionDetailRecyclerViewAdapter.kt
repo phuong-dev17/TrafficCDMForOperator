@@ -43,7 +43,11 @@ class SubmissionDetailRecyclerViewAdapter(
                 "Truck" -> R.drawable.object_in_concern_truck_24dp
                 "Ship" -> R.drawable.object_in_conern_ship_24dp
                 "Train" -> R.drawable.object_in_concern_train_24dp
+                "Wagon" -> R.drawable.object_in_concern_train_24dp
+                "Shipment" -> R.drawable.object_in_concern_shipment_24dp
                 "Airplane" -> R.drawable.object_in_concern_airplane_24dp
+                "Trailer" -> R.drawable.object_in_concern_trailer_24dp
+                "Cargo carrier" -> R.drawable.object_in_concern_cargo_carrier_24dp
                 "Service" -> R.drawable.object_in_concern_service_24dp
                 else -> R.drawable.default_24dp
             }
