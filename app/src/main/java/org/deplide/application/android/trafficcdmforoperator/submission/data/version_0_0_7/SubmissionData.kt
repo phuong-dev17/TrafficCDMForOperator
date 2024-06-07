@@ -389,10 +389,19 @@ data class SubmissionData(
         val objectType = referenceObject?.split(":")!![2]
         val objectTypeUppercase = objectType.replaceFirstChar { it.uppercase() }
         val objectId = referenceObject?.split("${objectType}:")!![1]
-        val attributeName = attribute?.split(":")!![2]
-        val attributeValue = attribute?.split(":")!![3]
 
-        return "$objectTypeUppercase $objectId $attributeName $attributeValue"
+        val attributeType = if (timeType == "set") {
+            val attributeName = attribute?.split(":")!![2]
+            val attributeValue = attribute?.split(":")!![3]
+
+            attributeName + attributeValue
+        } else {
+            val attributeName = attribute?.split(":")!![2]
+
+            attributeName
+        }
+
+        return "$objectTypeUppercase $objectId $attributeType"
     }
 
     companion object {
