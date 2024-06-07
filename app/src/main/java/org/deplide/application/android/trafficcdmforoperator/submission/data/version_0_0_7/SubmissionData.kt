@@ -51,7 +51,7 @@ data class SubmissionData(
     )
 
     fun isPayloadValid(): Boolean {
-        return when(type) {
+        val payloadHasEnoughFields =  when(type) {
             "LocationState" -> isLocationStatePayloadValid()
             "MessageOperation" -> isMessageOperationPayloadValid()
             "AdministrativeState" -> isAdministrativeStatePayloadValid()
@@ -60,6 +60,10 @@ data class SubmissionData(
             "CarrierState" -> isCarrierStatePayloadValid()
             else -> false //unknown type
         }
+
+        val fieldsValidation = commonFieldCriteriaValidation()
+
+        return payloadHasEnoughFields && fieldsValidation
     }
 
     fun isMessageValid(): Boolean {
@@ -402,6 +406,34 @@ data class SubmissionData(
         }
 
         return "$objectTypeUppercase $objectId $attributeType"
+    }
+
+    private fun commonFieldCriteriaValidation(): Boolean {
+        return isLocationInValidFormat() && isReferenceObjectInValidFormat() && isCarrierInValidFormat()
+    }
+
+    private fun isLocationInValidFormat(): Boolean {
+        return commonTcmfMessageFieldValueValidation(location)
+    }
+
+    private fun isReferenceObjectInValidFormat(): Boolean {
+        return commonTcmfMessageFieldValueValidation(referenceObject)
+    }
+
+    private fun isCarrierInValidFormat(): Boolean {
+        return commonTcmfMessageFieldValueValidation(carrier)
+    }
+
+    private fun commonTcmfMessageFieldValueValidation(value: String?) = if (value != null) {
+        val tempArray = value.split(":") ?: emptyList()
+
+        if ((tempArray.size < 4) || (tempArray.size == 4 && tempArray[3].isEmpty())) {
+            false
+        } else {
+            true
+        }
+    } else {
+        true
     }
 
     companion object {
