@@ -186,12 +186,17 @@ class SubmissionOverviewFragment : Fragment() {
         }
     }
 
-    private fun configureChip(chip: Chip, chipTitle: String, items: List<String>) {
+    private fun configureChip(
+        chip: Chip,
+        chipTitle: String,
+        items: List<String>
+    ) {
         val listPopupWindow = ListPopupWindow(requireContext())
         val adapter = ArrayAdapter(
             requireContext(), R.layout.cell_location, items)
         listPopupWindow.setAdapter(adapter)
         listPopupWindow.anchorView = chip
+        listPopupWindow.width = requireActivity().window.decorView.width - 32.dptoPx()
 
         chip.setOnClickListener { it ->
             listPopupWindow.show()
@@ -235,6 +240,8 @@ class SubmissionOverviewFragment : Fragment() {
             )
         }
     }
+
+    private fun Int.dptoPx(): Int = (this * resources.displayMetrics.density).toInt()
 
     companion object {
         private const val TAG = "SubmissionOverviewFragment"
