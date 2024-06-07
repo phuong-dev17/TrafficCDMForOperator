@@ -117,6 +117,7 @@ class SubmissionOverviewFragment : Fragment() {
         Log.d(TAG, "onSuccess: $submissions")
         binding.pbSubmittedTimeStamp.visibility = View.GONE
         binding.rvSubmittedTimeStamp.visibility = View.VISIBLE
+        binding.chipGroupSubmissionFilers.visibility = View.VISIBLE
 
         val adapter = SubmissionDetailRecyclerViewAdapter(
             submissions,
@@ -139,12 +140,14 @@ class SubmissionOverviewFragment : Fragment() {
         Log.d(TAG, "onLoading")
         binding.pbSubmittedTimeStamp.visibility = View.VISIBLE
         binding.rvSubmittedTimeStamp.visibility = View.GONE
+        binding.chipGroupSubmissionFilers.visibility = View.GONE
     }
 
     private fun onError(message: String) {
         Log.d(TAG, "onError: $message")
         binding.pbSubmittedTimeStamp.visibility = View.GONE
         binding.rvSubmittedTimeStamp.visibility = View.GONE
+        binding.chipGroupSubmissionFilers.visibility = View.GONE
     }
 
     companion object {

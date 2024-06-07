@@ -23,4 +23,6 @@
     <string name="time_type_actual">Actual</string>
     <string name="cancel">Cancel</string>
     <string name="attribute">Attribute</string>
+    <string name="object_in_concern">Object In Concern</string>
+    <string name="grouping">Grouping</string>
 </resources>
