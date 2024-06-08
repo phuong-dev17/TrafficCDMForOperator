@@ -413,7 +413,10 @@ data class SubmissionData(
     }
 
     private fun commonFieldCriteriaValidation(): Boolean {
-        return isLocationInValidFormat() && isReferenceObjectInValidFormat() && isCarrierInValidFormat()
+        return isLocationInValidFormat()
+                && isReferenceObjectInValidFormat()
+                && isCarrierInValidFormat()
+                && isAttributeInValidFormat()
     }
 
     private fun isLocationInValidFormat(): Boolean {
@@ -426,6 +429,24 @@ data class SubmissionData(
 
     private fun isCarrierInValidFormat(): Boolean {
         return commonTcmfMessageFieldValueValidation(carrier)
+    }
+
+    private fun isAttributeInValidFormat(): Boolean {
+        return if (attribute != null) {
+            if (timeSequence == "set") {
+                commonTcmfMessageFieldValueValidation(attribute)
+            } else {
+                val tempArray = attribute?.split(":")?: emptyList()
+
+                if ((tempArray.size < 3) || (tempArray.size == 3 && tempArray[2].isEmpty())) {
+                    false
+                } else {
+                    true
+                }
+            }
+        } else {
+            true
+        }
     }
 
     private fun commonTcmfMessageFieldValueValidation(value: String?) = if (value != null) {
