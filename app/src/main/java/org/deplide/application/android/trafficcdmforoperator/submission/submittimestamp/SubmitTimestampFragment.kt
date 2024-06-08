@@ -11,6 +11,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat.getColor
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -247,10 +248,13 @@ class SubmitTimestampFragment : Fragment(), StateFragmentDataUpdateListener {
     }
 
     private fun configureStateDropdownList() {
-        binding.edtState.setOnItemClickListener { _, _, position, _ ->
-            val timeSequence = resources.getStringArray(R.array.time_sequence)[position]
+        binding.edtState.addTextChangedListener {
+            val timeSequence = it.toString()
+            val validTimeSequences = resources.getStringArray(R.array.time_sequence)
 
-            loadStateFragment(timeSequence)
+            if (timeSequence in validTimeSequences) {
+                loadStateFragment(timeSequence)
+            }
         }
     }
 
