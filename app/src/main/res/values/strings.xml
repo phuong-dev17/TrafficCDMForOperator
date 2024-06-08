@@ -25,4 +25,7 @@
     <string name="attribute">Attribute</string>
     <string name="object_in_concern">Object In Concern</string>
     <string name="grouping">Grouping</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="carrier">Carrier</string>
 </resources>

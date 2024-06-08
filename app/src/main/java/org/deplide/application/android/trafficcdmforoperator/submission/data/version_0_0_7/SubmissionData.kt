@@ -1,6 +1,7 @@
 package org.deplide.application.android.trafficcdmforoperator.submission.data.version_0_0_7
 
 import android.os.Parcelable
+import android.util.Log
 import kotlinx.parcelize.Parcelize
 import org.deplide.application.android.trafficcdmforoperator.network.dto.tcmf.version_0_0_7.TCMFMessage
 import org.deplide.application.android.trafficcdmforoperator.repository.db.SubmissionEntity
@@ -63,6 +64,7 @@ data class SubmissionData(
 
         val fieldsValidation = commonFieldCriteriaValidation()
 
+        Log.d(TAG, "payloadHasEnoughFields: $payloadHasEnoughFields, fieldsValidation: $fieldsValidation")
         return payloadHasEnoughFields && fieldsValidation
     }
 
@@ -143,7 +145,7 @@ data class SubmissionData(
         var isValid = true
 
         //mandatory fields
-        if (timeType != null || time == null || carrier == null ||
+        if (timeType == null || time == null || carrier == null ||
             timeSequence == null || referenceObject == null) {
             isValid = false
         }
@@ -216,7 +218,7 @@ data class SubmissionData(
         val localTime = convertUTCTimeToSystemDefault(time!!, dateTimeFormat)
         return "$timeTypeString $timeSequenceString" +
                 " $locationType $locationId" +
-                " at $localTime"
+                " on $localTime"
     }
 
     private fun getDescriptionForAdministrativeState(dateTimeFormat: String): String {
@@ -240,7 +242,7 @@ data class SubmissionData(
             ""
         }
 
-        return "$timeSequenceString at $localTime $objectString $locationString"
+        return "$timeSequenceString on $localTime $objectString $locationString"
     }
 
     private fun getDescriptionForServiceState(dateTimeFormat: String): String {
@@ -273,7 +275,7 @@ data class SubmissionData(
             ""
         }
 
-        return "$timeTypeString $timeSequenceString at $localTime $objectString $locationString"
+        return "$timeTypeString $timeSequenceString on $localTime $objectString $locationString"
     }
 
     private fun getDescriptionForCarrierState(dateTimeFormat: String): String {
@@ -299,16 +301,16 @@ data class SubmissionData(
             ""
         }
 
-        val objectString = if (referenceObject != null) {
-            val objectType = referenceObject?.split(":")!![2]
-            val objectId = referenceObject?.split("${objectType}:")!![1]
+        val objectString = if (carrier != null) {
+            val objectType = carrier?.split(":")!![2]
+            val objectId = carrier?.split("${objectType}:")!![1]
 
-            "for $objectType $objectId"
+            "$objectType $objectId"
         } else {
             ""
         }
 
-        return "$timeTypeString $timeSequenceString at $localTime $objectString $locationString"
+        return "$timeTypeString $timeSequenceString $objectString on $localTime $locationString"
     }
 
     private fun getDescriptionForAttributeState(dateTimeFormat: String): String {
@@ -385,9 +387,11 @@ data class SubmissionData(
         return "Service $service"
     }
     private fun getObjectInConcernForCarrierState(): String {
-        val carrier = carrier?.split(":")!![2]
+        val objectType = referenceObject?.split(":")!![2]
+        val objectTypeUppercase = objectType.replaceFirstChar { it.uppercase() }
+        val objectId = referenceObject?.split("${objectType}:")!![1]
 
-        return "Carrier $carrier"
+        return "$objectTypeUppercase $objectId"
     }
     private fun getObjectInConcernForAttributeState(): String {
         val objectType = referenceObject?.split(":")!![2]
@@ -425,7 +429,7 @@ data class SubmissionData(
     }
 
     private fun commonTcmfMessageFieldValueValidation(value: String?) = if (value != null) {
-        val tempArray = value.split(":") ?: emptyList()
+        val tempArray = value.split(":")
 
         if ((tempArray.size < 4) || (tempArray.size == 4 && tempArray[3].isEmpty())) {
             false
@@ -437,6 +441,7 @@ data class SubmissionData(
     }
 
     companion object {
+        private const val TAG = "SubmissionData"
         const val CARRIER_PREFIX = "tcmf:carrier:"
         const val REFERENCE_OBJECT_PREFIX = "tcmf:reference_object:"
         const val FIELD_TIME = "Time"
