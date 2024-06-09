@@ -1,5 +1,6 @@
 package org.deplide.application.android.trafficcdmforoperator.submission.submissionoverview
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -22,8 +23,14 @@ class SubmissionDetailRecyclerViewAdapter(
         fun bind(submissionData: SubmissionData) {
             binding.apply {
                 val objectInConcern = submissionData.getObjectInConcern()
-                val objectType = objectInConcern.split(" ")
-                imageViewObjectInConcern.setImageResource(getObjectTypeIcon(objectType[0]))
+
+                val temp = objectInConcern.split(" ")
+                    .toMutableList()
+                temp.removeLast()
+                val objectType =
+                    temp.toMutableList().joinToString(" ")
+
+                imageViewObjectInConcern.setImageResource(getObjectTypeIcon(objectType))
                 textViewObjectInConcern.text = objectInConcern
                 textViewDescription.text = submissionData.getDescription(
                     root.context.getString(R.string.date_time_pattern))
@@ -54,6 +61,7 @@ class SubmissionDetailRecyclerViewAdapter(
         }
 
         companion object {
+            private const val TAG = "SubmissionDetailViewHolder"
             fun create(parent: ViewGroup,
                        onItemClick: (String) -> Unit,
                        onItemLongClick: (String) -> Unit): SubmissionDetailViewHolder {

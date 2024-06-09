@@ -234,10 +234,9 @@ data class SubmissionData(
         }
 
         val objectString = if (referenceObject != null) {
-            val objectType = referenceObject?.split(":")!![2]
-            val objectId = referenceObject?.split("${objectType}:")!![1]
+            val referenceObjectString = getObjectString()
 
-            "for $objectType $objectId"
+            "for $referenceObjectString"
         } else {
             ""
         }
@@ -267,10 +266,9 @@ data class SubmissionData(
         }
 
         val objectString = if (referenceObject != null) {
-            val objectType = referenceObject?.split(":")!![2]
-            val objectId = referenceObject?.split("${objectType}:")!![1]
+            val referenceObjectString = getObjectString()
 
-            "for $objectType $objectId"
+            "for $referenceObjectString"
         } else {
             ""
         }
@@ -302,10 +300,7 @@ data class SubmissionData(
         }
 
         val objectString = if (carrier != null) {
-            val objectType = carrier?.split(":")!![2]
-            val objectId = carrier?.split("${objectType}:")!![1]
-
-            "$objectType $objectId"
+            getObjectString(isCarrierObject = true)
         } else {
             ""
         }
@@ -325,10 +320,9 @@ data class SubmissionData(
         }
 
         val objectString = if (referenceObject != null) {
-            val objectType = referenceObject?.split(":")!![2]
-            val objectId = referenceObject?.split("${objectType}:")!![1]
+            val referenceObjectString = getObjectString()
 
-            "for $objectType $objectId"
+            "for $referenceObjectString"
         } else {
             ""
         }
@@ -368,12 +362,21 @@ data class SubmissionData(
         }
     }
 
-    private fun getObjectInConcernForLocationState(): String {
-        val objectType = referenceObject?.split(":")!![2]
-        val objectTypeUppercase = objectType.replaceFirstChar { it.uppercase() }
-        val objectId = referenceObject?.split("${objectType}:")!![1]
+    private fun getObjectString(isCarrierObject: Boolean = false): String {
+        val value = if (isCarrierObject) {
+            carrier
+        } else {
+            referenceObject
+        }
+        val objectType = value?.split(":")!![2]
+        val objectTypeUppercase = objectType.replaceFirstChar { it.uppercase() }.replace("_", " ")
+        val objectId = value.split("${objectType}:")[1]
 
         return "$objectTypeUppercase $objectId"
+    }
+
+    private fun getObjectInConcernForLocationState(): String {
+        return getObjectString()
     }
 
     private fun getObjectInConcernForAdministrativeState(): String {
@@ -387,29 +390,10 @@ data class SubmissionData(
         return "Service $service"
     }
     private fun getObjectInConcernForCarrierState(): String {
-        val objectType = referenceObject?.split(":")!![2]
-        val objectTypeUppercase = objectType.replaceFirstChar { it.uppercase() }
-        val objectId = referenceObject?.split("${objectType}:")!![1]
-
-        return "$objectTypeUppercase $objectId"
+        return getObjectString()
     }
     private fun getObjectInConcernForAttributeState(): String {
-        val objectType = referenceObject?.split(":")!![2]
-        val objectTypeUppercase = objectType.replaceFirstChar { it.uppercase() }
-        val objectId = referenceObject?.split("${objectType}:")!![1]
-
-        val attributeType = if (timeType == "set") {
-            val attributeName = attribute?.split(":")!![2]
-            val attributeValue = attribute?.split(":")!![3]
-
-            attributeName + attributeValue
-        } else {
-            val attributeName = attribute?.split(":")!![2]
-
-            attributeName
-        }
-
-        return "$objectTypeUppercase $objectId $attributeType"
+        return getObjectString()
     }
 
     private fun commonFieldCriteriaValidation(): Boolean {
