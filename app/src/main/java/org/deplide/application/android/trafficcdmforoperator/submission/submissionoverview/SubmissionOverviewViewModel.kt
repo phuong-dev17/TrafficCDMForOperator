@@ -45,7 +45,7 @@ class SubmissionOverviewViewModel(private val applicationContext: Context): View
             try {
                 val submissionList = submissionDB.getSubmissions()
 
-                val filteredSubmissionList = runFilters(submissionList)
+                val filteredSubmissionList = runFilters(submissionList).reversed()
 
                 _uiState.value = SubmissionOverviewUIState.Success(filteredSubmissionList)
             } catch (ex: Exception) {
